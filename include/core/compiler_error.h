@@ -7,6 +7,7 @@
 
 #include <string>
 #include <core/source_location.h>
+#include <core/mcc_object.h>
 
 namespace mcc::core {
 
@@ -15,7 +16,7 @@ namespace mcc::core {
         ERROR,
     };
 
-    class CompilerError {
+    class CompilerError : public MCCObject {
 
         private:
             Severity m_severity;
@@ -27,8 +28,8 @@ namespace mcc::core {
             CompilerError(Severity severity, SourceLocation location, const std::string& message);
             ~CompilerError();
 
-            [[nodiscard]] Severity severity();
-            [[nodiscard]] std::string to_string();
+            [[nodiscard]] Severity severity() const;
+            [[nodiscard]] std::string to_string() final;
 
 
     };

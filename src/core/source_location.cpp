@@ -7,8 +7,8 @@
 using namespace mcc;
 using namespace mcc::core;
 
-SourceLocation::SourceLocation(const std::string& message, size_t line, size_t col)
-: m_file(m_file),
+SourceLocation::SourceLocation(const std::string& file, size_t line, size_t col)
+: m_file(file),
   m_line(line),
   m_col(col)
 {
@@ -25,5 +25,13 @@ std::string SourceLocation::to_string() {
   return std::format("{} {}:{}", m_file, m_line, m_col);
 }
 
+void SourceLocation::increment_line() {
 
+	m_line++;
+	m_col = 0;
+
+}
+void SourceLocation::increment_col() {
+	m_col++;
+}
 

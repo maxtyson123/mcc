@@ -1,0 +1,52 @@
+//
+// Created by Max Tyson on 10/09/2026.
+//
+
+#ifndef MCC_PRINT_HELPERS_H
+#define MCC_PRINT_HELPERS_H
+
+#include <lexer/token.h>
+#include <core/error_reporter.h>
+
+
+
+namespace std {
+
+	template <> struct formatter<mcc::lexer::TokenKind> : formatter<std::string_view> {
+		auto format(mcc::lexer::TokenKind kind, std::format_context& ctx) const {
+			std::string_view name = "Unknown";
+			switch (kind) {
+				case mcc::lexer::TokenKind::IDENTIFIER:  name = "Identifer"; break;
+				case mcc::lexer::TokenKind::END_OF_FILE: name = "End Of File"; break;
+				case mcc::lexer::TokenKind::ERROR: name = "Error"; break;
+
+				case mcc::lexer::TokenKind::OPEN_PARENTHESES:  name = "Open Parentheses"; break;
+				case mcc::lexer::TokenKind::CLOSE_PARENTHESES: name = "Close Parentheses"; break;
+				case mcc::lexer::TokenKind::OPEN_BRACKET: name = "Open Bracket"; break;
+				case mcc::lexer::TokenKind::CLOSE_BRACKET: name = "Close Bracket"; break;
+				case mcc::lexer::TokenKind::SEMI_COLON: name = "Close Bracket"; break;
+
+				case mcc::lexer::TokenKind::LITERAL_INTEGER:  name = "Integer Literal"; break;
+
+				case mcc::lexer::TokenKind::KEYWORD_INT: name = "Int Keyword"; break;
+				case mcc::lexer::TokenKind::KEYWORD_RETURN: name = "Return Keyword"; break;
+			}
+			return std::formatter<std::string_view>::format(name, ctx);
+		}
+	};
+
+
+	template <> struct formatter<mcc::core::Severity> : formatter<std::string_view> {
+		auto format(mcc::core::Severity severity, std::format_context& ctx) const {
+			std::string_view name = "Unknown";
+			switch (severity) {
+				case mcc::core::Severity::ERROR:  name = "Error"; break;
+				case mcc::core::Severity::WARNING:  name = "Warning"; break;
+			}
+			return std::formatter<std::string_view>::format(name, ctx);
+		}
+	};
+
+}
+
+#endif//MCC_PRINT_HELPERS_H

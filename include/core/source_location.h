@@ -5,12 +5,15 @@
 #ifndef MCC_CORE_SOURCE_LOCATION_H
 #define MCC_CORE_SOURCE_LOCATION_H
 
-#include <string>
+#include "mcc_object.h"
+
+
 #include <format>
+#include <string>
 
 namespace mcc::core {
 
-    class SourceLocation {
+    class SourceLocation : public  MCCObject {
 
         private:
 
@@ -19,11 +22,14 @@ namespace mcc::core {
             size_t m_col;
 
         public:
-            SourceLocation(const std::string& message, size_t line, size_t col);
+            SourceLocation(const std::string& file, size_t line, size_t col);
             ~SourceLocation();
 
             [[nodiscard]] std::string file();
-            [[nodiscard]] std::string to_string();
+            [[nodiscard]] std::string to_string() final;
+
+    		void increment_line();
+    		void increment_col();
     };
 
 }

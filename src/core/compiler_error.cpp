@@ -3,6 +3,7 @@
 //
 
 #include <core/compiler_error.h>
+#include <core/print_helpers.h>
 
 using namespace mcc;
 using namespace mcc::core;
@@ -16,28 +17,12 @@ CompilerError::CompilerError(Severity severity, SourceLocation location, const s
 
 CompilerError::~CompilerError() = default;
 
-Severity CompilerError::severity() {
+Severity CompilerError::severity() const {
   return m_severity;
 }
 
 std::string CompilerError::to_string() {
-
-  std::string level;
-  switch (m_severity) {
-
-    case Severity::ERROR: {
-      level = "Error";
-      break;
-    };
-
-    case Severity::WARNING: {
-      level = "Warning";
-      break;
-    }
-
-  }
-
-  return std::format("{}: {} - {}", level, m_location.to_string(), m_message);
+  return std::format("{}: {} - {}", m_severity, m_location.to_string(), m_message);
 }
 
 
