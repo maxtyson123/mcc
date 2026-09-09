@@ -10,7 +10,7 @@ using namespace mcc::core;
 
 Lexer::Lexer(const std::string& source, const std::string& filename, const LexerConfig& config, const ErrorReporter& reporter)
 : m_source_code(source),
-  m_location(filename, 0, 0),
+  m_location(filename, 1, 0),
   m_config(config),
   m_errors(reporter)
 {
@@ -18,6 +18,10 @@ Lexer::Lexer(const std::string& source, const std::string& filename, const Lexer
 };
 
 Lexer::~Lexer() = default;
+
+char Lexer::lookahead() {
+	return m_source_code[m_pos];
+}
 
 char Lexer::consume() {
 	m_location.increment_col();
@@ -31,7 +35,7 @@ void Lexer::skip_whitespace() {
 	while (true) {
 
 		// Peek the next part of the source code
-		c = m_source_code[m_pos];
+		c = lookahead();
 
 		switch (c) {
 
@@ -65,12 +69,15 @@ Token Lexer::parse_text_token(char c) {
 
 	// Get whole lexeme
 	std::string lexeme = std::string(1, c);
-	c = consume();
+	c = lookahead();
 
 	// Subsequent text token chars may be a letter, digit, or underscore
 	while (std::isalnum(c) || c == '_' ) {
-		lexeme.push_back(c);
 		c = consume();
+		lexeme.push_back(c);
+
+		// Cannot consume until known that it belongs to this token
+		c = lookahead();
 	}
 
 	// Keywords take precedence
@@ -84,11 +91,9 @@ Token Lexer::parse_digit_token(char c) {
 
 	// Get whole lexeme
 	std::string lexeme = std::string(1, c);
-	c = consume();
-
-	while (std::isdigit(c)) {
-		lexeme.push_back(c);
+	while (std::isdigit(lookahead())) {
 		c = consume();
+		lexeme.push_back(c);
 	}
 
 	return token_at_current(TokenKind::LITERAL_INTEGER, lexeme);
@@ -127,12 +132,12 @@ Token Lexer::parse_next() {
 
 	// End of file
 	if (at_end())
-		return token_at_current(TokenKind::END_OF_FILE, nullptr);
+		return token_at_current(TokenKind::END_OF_FILE, "EOF");
 
 	char c = consume();
 
 	// Text token
-	if (std::isalnum(c))
+	if (std::isalpha(c) || c == '_')
 		return parse_text_token(c);
 
 	// Digit
@@ -156,15 +161,15 @@ Token Lexer::next() {
 		return parse_next();
 
 	Token out = token_buffer.front();
-	token_buffer.pop();
+	token_buffer.pop_front();
 	return out;
 }
 
 Token Lexer::peek(const size_t offset) {
 
 	// Get the next n tokens until offset is reached
-	for (size_t i = 0; i < offset + 1; ++i)
-		token_buffer.push(parse_next());
+	while (token_buffer.size() <= offset)
+		token_buffer.push_back(parse_next());
 
 	return token_buffer.back();
 }

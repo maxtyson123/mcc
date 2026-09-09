@@ -29,8 +29,9 @@ namespace mcc::lexer {
 			lexer_config_t m_config;
 			core::ErrorReporter m_errors;
 
-			std::queue<Token> token_buffer = {};
+			std::deque<Token> token_buffer = {};
 
+			char lookahead();
 			char consume();
 			void skip_whitespace();
 

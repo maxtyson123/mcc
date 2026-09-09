@@ -24,7 +24,7 @@ namespace std {
 				case mcc::lexer::TokenKind::CLOSE_PARENTHESES: name = "Close Parentheses"; break;
 				case mcc::lexer::TokenKind::OPEN_BRACKET: name = "Open Bracket"; break;
 				case mcc::lexer::TokenKind::CLOSE_BRACKET: name = "Close Bracket"; break;
-				case mcc::lexer::TokenKind::SEMI_COLON: name = "Close Bracket"; break;
+				case mcc::lexer::TokenKind::SEMI_COLON: name = "Semi Colon"; break;
 
 				case mcc::lexer::TokenKind::LITERAL_INTEGER:  name = "Integer Literal"; break;
 
