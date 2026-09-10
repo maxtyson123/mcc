@@ -18,18 +18,18 @@ namespace mcc::parser {
 		private:
 
 			lexer::Lexer m_lexer;
-			core::ErrorReporter m_errors;
+			core::ErrorReporter& m_errors;
 
 			lexer::Token m_current_token;
 
 			lexer::Token peek();
 			lexer::Token advance();
 
-			[[nodiscard]] bool check(lexer::TokenKind kind);
-			lexer::Token expect(lexer::TokenKind kind, const std::string& message);
+			[[nodiscard]] bool check(lexer::TokenType type);
+			lexer::Token expect(lexer::TokenType type, const std::string& message);
 
 		public:
-			Parser(const lexer::Lexer& lexer, const core::ErrorReporter& error_reporter);
+			Parser(const lexer::Lexer& lexer, core::ErrorReporter& error_reporter);
 			~Parser();
 
 

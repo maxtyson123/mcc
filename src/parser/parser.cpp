@@ -10,7 +10,7 @@ using namespace mcc::lexer;
 using namespace mcc::core;
 using namespace mcc::InternalLanguage;
 
-Parser::Parser(const Lexer& lexer, const ErrorReporter& error_reporter)
+Parser::Parser(const Lexer& lexer, ErrorReporter& error_reporter)
 : m_lexer(lexer),
   m_errors(error_reporter),
   m_current_token(m_lexer.next())
@@ -31,23 +31,23 @@ Token Parser::advance() {
 	return current;
 }
 
-bool Parser::check(TokenKind kind) {
-	return peek().kind() == kind;
+bool Parser::check(TokenType type) {
+	return peek().type() == type;
 }
 
-Token Parser::expect(TokenKind kind, const std::string& message) {
+Token Parser::expect(TokenType type, const std::string& message) {
 
 	// Token must be of expected type
-	if (check(kind))
+	if (check(type))
 		return advance();
 
 	m_errors.report(Stage::PARSER, Severity::ERROR, peek().location(), message);
-	return {TokenKind::ERROR, peek().lexeme(), peek().location()};
+	return {TokenType::ERROR, peek().lexeme(), peek().location()};
 }
 
 std::unique_ptr<LiteralInteger> Parser::parse_literal_integer() {
 
-	Token value = expect(TokenKind::LITERAL_INTEGER, "Expected integer value");
+	Token value = expect(TokenType::LITERAL_INTEGER, "Expected integer value");
 
 	// Parse the lexeme
 	int64_t val = std::stoll(value.lexeme());
@@ -57,9 +57,9 @@ std::unique_ptr<LiteralInteger> Parser::parse_literal_integer() {
 std::unique_ptr<Expression> Parser::parse_expression() {
 
 	Token next = peek();
-	switch (next.kind()) {
+	switch (next.type()) {
 
-		case TokenKind::LITERAL_INTEGER : {
+		case TokenType::LITERAL_INTEGER : {
 			return parse_literal_integer();
 			break;
 		}
@@ -76,9 +76,13 @@ std::unique_ptr<Expression> Parser::parse_expression() {
 std::unique_ptr<StatementReturn> Parser::parse_return() {
 
 	// expect: return <expression>
-	expect(TokenKind::KEYWORD_RETURN, "Expected 'return' keyword");
+	expect(TokenType::KEYWORD_RETURN, "Expected 'return' keyword");
 	std::unique_ptr<Expression> expression = parse_expression();
-	expect(TokenKind::SEMI_COLON, "Expected semi-colon to close return statement");
+
+	if (expression == nullptr)
+		return nullptr;
+
+	expect(TokenType::SEMI_COLON, "Expected semi-colon to close return statement");
 
 	return std::make_unique<StatementReturn>(std::move(expression));
 }
@@ -86,9 +90,9 @@ std::unique_ptr<StatementReturn> Parser::parse_return() {
 std::unique_ptr<Statement> Parser::parse_statement() {
 
 	Token next = peek();
-	switch (next.kind()) {
+	switch (next.type()) {
 
-		case TokenKind::KEYWORD_RETURN : {
+		case TokenType::KEYWORD_RETURN : {
 			return parse_return();
 			break;
 		}
@@ -104,12 +108,12 @@ std::unique_ptr<Statement> Parser::parse_statement() {
 std::unique_ptr<Block> Parser::parse_block() {
 
 	// expect: { <statement>; <statement>; ...; }
-	expect(TokenKind::OPEN_BRACKET, "Expected open bracket to start block");
+	expect(TokenType::OPEN_BRACKET, "Expected open bracket to start block");
 	std::vector<std::unique_ptr<Statement>> statements = {};
 
 	// Add all the statments
 	Token next = peek();
-	while (next.kind() != TokenKind::CLOSE_BRACKET && next.kind() != TokenKind::END_OF_FILE) {
+	while (next.type() != TokenType::CLOSE_BRACKET && next.type() != TokenType::END_OF_FILE) {
 
 		// Get the next valid statement
 		if (std::unique_ptr<Statement> statement = parse_statement())
@@ -118,7 +122,7 @@ std::unique_ptr<Block> Parser::parse_block() {
 		next = peek();
 	}
 
-	expect(TokenKind::CLOSE_BRACKET, "Expected close bracket to close block");
+	expect(TokenType::CLOSE_BRACKET, "Expected close bracket to close block");
 	return std::make_unique<Block>(std::move(statements));
 }
 std::unique_ptr<Function> Parser::parse_function() {
@@ -126,12 +130,12 @@ std::unique_ptr<Function> Parser::parse_function() {
 	//@todo types
 
 	// expect: <type> <identifier> <block>
-	Token return_type = expect(TokenKind::KEYWORD_INT, "Expected function return type");
-	Token function_name = expect(TokenKind::IDENTIFIER, "Expected function identifier");
+	Token return_type = expect(TokenType::KEYWORD_INT, "Expected function return type");
+	Token function_name = expect(TokenType::IDENTIFIER, "Expected function identifier");
 
 	// @todo parse params
-	expect(TokenKind::OPEN_PARENTHESES, "Expected opening parentheses");
-	expect(TokenKind::CLOSE_PARENTHESES, "Expected closing parentheses");
+	expect(TokenType::OPEN_PARENTHESES, "Expected opening parentheses");
+	expect(TokenType::CLOSE_PARENTHESES, "Expected closing parentheses");
 
 	std::unique_ptr<Block> body = parse_block();
 

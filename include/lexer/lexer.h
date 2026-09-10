@@ -15,7 +15,7 @@ namespace mcc::lexer {
 
 	typedef struct LexerConfig {
 
-		std::unordered_map<std::string, TokenKind> keywords;
+		std::unordered_map<std::string, TokenType> keywords;
 
 	} lexer_config_t;
 
@@ -27,7 +27,7 @@ namespace mcc::lexer {
 			core::SourceLocation m_location;
 
 			lexer_config_t m_config;
-			core::ErrorReporter m_errors;
+		    core::ErrorReporter& m_errors;
 
 			std::deque<Token> token_buffer = {};
 
@@ -35,7 +35,7 @@ namespace mcc::lexer {
 			char consume();
 			void skip_whitespace();
 
-			Token token_at_current(TokenKind kind, const std::string& lexeme);
+			Token token_at_current(TokenType type, const std::string& lexeme);
 
 		    Token parse_text_token(char c);
 		    Token parse_digit_token(char c);
@@ -44,7 +44,7 @@ namespace mcc::lexer {
 
 		public:
 
-			Lexer(const std::string& source, const std::string& filename, const LexerConfig& config, const core::ErrorReporter& reporter);
+			Lexer(const std::string& source, const std::string& filename, LexerConfig  config, core::ErrorReporter& reporter);
 			~Lexer();
 
 			Token next();

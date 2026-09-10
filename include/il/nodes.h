@@ -12,6 +12,22 @@
 
 namespace mcc::InternalLanguage {
 
+	enum class NodeType {
+
+		UNKNOWN,
+
+		EXPRESSION,
+
+		LiteralNumber,
+		LiteralInteger,
+
+		STATEMENT,
+		STATEMENT_RETURN,
+
+		BLOCK,
+		FUNCTION,
+	};
+
 	class Node : public core::MCCObject {
 
 		public:
@@ -22,6 +38,8 @@ namespace mcc::InternalLanguage {
 
 			void print();
 			virtual void print(size_t indent);
+
+			virtual NodeType type() = 0;
 	};
 
 
@@ -47,6 +65,8 @@ namespace mcc::InternalLanguage {
 
 			[[nodiscard]] int64_t value();
 			[[nodiscard]] std::string to_string() final;
+
+			[[nodiscard]] NodeType type() final;
 	};
 
 	class Statement : public Node {
@@ -64,7 +84,11 @@ namespace mcc::InternalLanguage {
 			StatementReturn(std::unique_ptr<Expression> value);
 			~StatementReturn() override;
 
+			[[nodiscard]] std::unique_ptr<Expression>& return_value();
+
 			[[nodiscard]] std::string to_string() final;
+
+			[[nodiscard]] NodeType type() final;
 	};
 
 	class Block : public Node {
@@ -82,6 +106,8 @@ namespace mcc::InternalLanguage {
 
 			[[nodiscard]] std::string to_string() final;
 			void print(size_t indent) override;
+
+			[[nodiscard]] NodeType type() final;
 	};
 
 	 class Function : public Node {
@@ -102,6 +128,7 @@ namespace mcc::InternalLanguage {
 			[[nodiscard]] std::string to_string() final;
 			void print(size_t indent) override;
 
+			[[nodiscard]] NodeType type() final;
 	 };
 
 }

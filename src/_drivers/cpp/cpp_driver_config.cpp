@@ -21,8 +21,8 @@ CPPDriverConfig::~CPPDriverConfig() = default;
 LexerConfig CPPDriverConfig::build_lexer_config() {
 	return {
 		{
-			{"int", TokenKind::KEYWORD_INT},
-			{"return", TokenKind::KEYWORD_RETURN},
+			{"int", TokenType::KEYWORD_INT},
+			{"return", TokenType::KEYWORD_RETURN},
 		}
 	};
 }

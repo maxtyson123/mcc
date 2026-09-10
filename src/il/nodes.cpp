@@ -48,6 +48,10 @@ std::string LiteralInteger::to_string() {
 	return std::format("{}", m_value);
 }
 
+NodeType LiteralInteger::type() {
+	return NodeType::LiteralInteger;
+}
+
 StatementReturn::StatementReturn(std::unique_ptr<Expression> value)
 : m_return_value(std::move(value))
 {
@@ -55,9 +59,17 @@ StatementReturn::StatementReturn(std::unique_ptr<Expression> value)
 
 StatementReturn::~StatementReturn() = default;
 
+std::unique_ptr<Expression>& StatementReturn::return_value() {
+	return m_return_value;
+}
+
 std::string StatementReturn::to_string() {
 	return std::format("Return: {}", m_return_value->to_string());
 
+}
+
+NodeType StatementReturn::type() {
+	return NodeType::STATEMENT_RETURN;
 }
 
 Block::Block(std::vector<std::unique_ptr<Statement>> contents)
@@ -87,6 +99,10 @@ void Block::print(size_t indent) {
 	print_indented_string(indent,"}");
 }
 
+NodeType Block::type() {
+	return NodeType::BLOCK;
+}
+
 Function::Function(std::string name, std::unique_ptr<Block> body)
 : m_name(name),
   m_body(std::move(body))
@@ -110,3 +126,6 @@ void Function::print(size_t indent) {
 	m_body->print(indent + 1);
 }
 
+NodeType Function::type() {
+	return NodeType::FUNCTION;
+}

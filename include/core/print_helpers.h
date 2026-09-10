@@ -12,24 +12,24 @@
 
 namespace std {
 
-	template <> struct formatter<mcc::lexer::TokenKind> : formatter<std::string_view> {
-		auto format(mcc::lexer::TokenKind kind, std::format_context& ctx) const {
+	template <> struct formatter<mcc::lexer::TokenType> : formatter<std::string_view> {
+		auto format(mcc::lexer::TokenType type, std::format_context& ctx) const {
 			std::string_view name = "Unknown";
-			switch (kind) {
-				case mcc::lexer::TokenKind::IDENTIFIER:  name = "Identifer"; break;
-				case mcc::lexer::TokenKind::END_OF_FILE: name = "End Of File"; break;
-				case mcc::lexer::TokenKind::ERROR: name = "Error"; break;
+			switch (type) {
+				case mcc::lexer::TokenType::IDENTIFIER:  name = "Identifer"; break;
+				case mcc::lexer::TokenType::END_OF_FILE: name = "End Of File"; break;
+				case mcc::lexer::TokenType::ERROR: name = "Error"; break;
 
-				case mcc::lexer::TokenKind::OPEN_PARENTHESES:  name = "Open Parentheses"; break;
-				case mcc::lexer::TokenKind::CLOSE_PARENTHESES: name = "Close Parentheses"; break;
-				case mcc::lexer::TokenKind::OPEN_BRACKET: name = "Open Bracket"; break;
-				case mcc::lexer::TokenKind::CLOSE_BRACKET: name = "Close Bracket"; break;
-				case mcc::lexer::TokenKind::SEMI_COLON: name = "Semi Colon"; break;
+				case mcc::lexer::TokenType::OPEN_PARENTHESES:  name = "Open Parentheses"; break;
+				case mcc::lexer::TokenType::CLOSE_PARENTHESES: name = "Close Parentheses"; break;
+				case mcc::lexer::TokenType::OPEN_BRACKET: name = "Open Bracket"; break;
+				case mcc::lexer::TokenType::CLOSE_BRACKET: name = "Close Bracket"; break;
+				case mcc::lexer::TokenType::SEMI_COLON: name = "Semi Colon"; break;
 
-				case mcc::lexer::TokenKind::LITERAL_INTEGER:  name = "Integer Literal"; break;
+				case mcc::lexer::TokenType::LITERAL_INTEGER:  name = "Integer Literal"; break;
 
-				case mcc::lexer::TokenKind::KEYWORD_INT: name = "Int Keyword"; break;
-				case mcc::lexer::TokenKind::KEYWORD_RETURN: name = "Return Keyword"; break;
+				case mcc::lexer::TokenType::KEYWORD_INT: name = "Int Keyword"; break;
+				case mcc::lexer::TokenType::KEYWORD_RETURN: name = "Return Keyword"; break;
 			}
 			return std::formatter<std::string_view>::format(name, ctx);
 		}

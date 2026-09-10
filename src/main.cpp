@@ -1,20 +1,19 @@
-#include "_drivers/cpp/cpp_driver_config.h"
-#include "parser/parser.h"
-
-
-#include <core/mcc_object.h>
 #include <fstream>
-#include <lexer/lexer.h>
-
-
 #include <iostream>
 #include <sstream>
+
+#include <_drivers/cpp/cpp_driver_config.h>
+#include <codegen/asm_emitter.h>
+#include <parser/parser.h>
+#include <core/mcc_object.h>
+#include <lexer/lexer.h>
 
 using namespace mcc;
 using namespace mcc::InternalLanguage;
 using namespace mcc::core;
 using namespace mcc::lexer;
 using namespace mcc::parser;
+using namespace mcc::codegen;
 using namespace mcc::drivers;
 using namespace mcc::drivers::cpp;
 
@@ -49,6 +48,11 @@ int main() {
 
 	std::printf("Program:\n");
 	prog->print(0);
+
+	AsmEmitter codegen;
+	std::printf("Assembled Program:\n");
+	std::printf("%s", codegen.emit_function(*prog).c_str());
+
 
 	errors.print_all();
     return 0;

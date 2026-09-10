@@ -10,7 +10,7 @@
 
 namespace mcc::lexer {
 
-	enum class TokenKind {
+	enum class TokenType {
 		IDENTIFIER,
 		END_OF_FILE,
 		ERROR,
@@ -30,15 +30,15 @@ namespace mcc::lexer {
 	class Token : core::MCCObject {
 
 		private:
-			TokenKind m_kind;
+			TokenType m_type;
 			std::string m_lexeme;
 			core::SourceLocation m_location;
 
 		public:
-			Token(TokenKind kind, std::string lexeme, core::SourceLocation location);
+			Token(TokenType type, std::string lexeme, core::SourceLocation location);
 			~Token();
 
-			[[nodiscard]] TokenKind kind() const;
+			[[nodiscard]] TokenType type() const;
 			[[nodiscard]] std::string lexeme();
 			[[nodiscard]] core::SourceLocation location();
 

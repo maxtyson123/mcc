@@ -8,10 +8,10 @@ using namespace mcc;
 using namespace mcc::lexer;
 using namespace mcc::core;
 
-Lexer::Lexer(const std::string& source, const std::string& filename, const LexerConfig& config, const ErrorReporter& reporter)
+Lexer::Lexer(const std::string& source, const std::string& filename, LexerConfig  config, ErrorReporter& reporter)
 : m_source_code(source),
   m_location(filename, 1, 0),
-  m_config(config),
+  m_config(std::move(config)),
   m_errors(reporter)
 {
 
@@ -61,8 +61,8 @@ void Lexer::skip_whitespace() {
 	}
 }
 
-Token Lexer::token_at_current(TokenKind kind, const std::string& lexeme) {
-	return {kind, lexeme, m_location};
+Token Lexer::token_at_current(TokenType type, const std::string& lexeme) {
+	return {type, lexeme, m_location};
 }
 
 Token Lexer::parse_text_token(char c) {
@@ -84,7 +84,7 @@ Token Lexer::parse_text_token(char c) {
 	if (auto keyword = m_config.keywords.find(lexeme); keyword != m_config.keywords.end())
 		return token_at_current(keyword->second, lexeme);
 
-	return token_at_current(TokenKind::IDENTIFIER, lexeme);
+	return token_at_current(TokenType::IDENTIFIER, lexeme);
 }
 
 Token Lexer::parse_digit_token(char c) {
@@ -96,30 +96,30 @@ Token Lexer::parse_digit_token(char c) {
 		lexeme.push_back(c);
 	}
 
-	return token_at_current(TokenKind::LITERAL_INTEGER, lexeme);
+	return token_at_current(TokenType::LITERAL_INTEGER, lexeme);
 }
 Token Lexer::parse_punct_token(const char c) {
 
 	switch (c) {
 
 		case '{' :
-			return token_at_current(TokenKind::OPEN_BRACKET, std::string(1, c));
+			return token_at_current(TokenType::OPEN_BRACKET, std::string(1, c));
 
 		case '}' :
-			return token_at_current(TokenKind::CLOSE_BRACKET, std::string(1, c));
+			return token_at_current(TokenType::CLOSE_BRACKET, std::string(1, c));
 
 		case '(' :
-			return token_at_current(TokenKind::OPEN_PARENTHESES, std::string(1, c));
+			return token_at_current(TokenType::OPEN_PARENTHESES, std::string(1, c));
 
 		case ')' :
-			return token_at_current(TokenKind::CLOSE_PARENTHESES, std::string(1, c));
+			return token_at_current(TokenType::CLOSE_PARENTHESES, std::string(1, c));
 
 		case ';' :
-			return token_at_current(TokenKind::SEMI_COLON, std::string(1, c));
+			return token_at_current(TokenType::SEMI_COLON, std::string(1, c));
 
 		default: {
 			m_errors.report(Stage::PARSER, Severity::ERROR, m_location, "Unknown token of type punctuation");
-			return token_at_current(TokenKind::ERROR, std::string(1, c));
+			return token_at_current(TokenType::ERROR, std::string(1, c));
 		}
 
 	}
@@ -132,7 +132,7 @@ Token Lexer::parse_next() {
 
 	// End of file
 	if (at_end())
-		return token_at_current(TokenKind::END_OF_FILE, "EOF");
+		return token_at_current(TokenType::END_OF_FILE, "EOF");
 
 	char c = consume();
 
@@ -150,7 +150,7 @@ Token Lexer::parse_next() {
 
 	// Must not be a known token
 	m_errors.report(Stage::LEXER, Severity::ERROR, m_location, "Unknown token");
-	return token_at_current(TokenKind::ERROR, std::string(1, c));
+	return token_at_current(TokenType::ERROR, std::string(1, c));
 
 }
 
