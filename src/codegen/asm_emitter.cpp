@@ -42,6 +42,18 @@ void AsmEmitter::emit_expression(Expression& expression) {
 					op = "sub";
 					break;
 				}
+
+				//@todo signedness
+
+				case BinaryOperator::MULTIPLY : {
+					op = "mul";
+					break;
+				}
+
+				case BinaryOperator::DIVIDE : {
+					op = "div";
+					break;
+				}
 			}
 
 			// Resolve lefthand onto stack

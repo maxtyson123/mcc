@@ -39,7 +39,8 @@ namespace mcc::InternalLanguage::nodes {
 
 		ADD,
 		SUBTRACT,
-
+		MULTIPLY,
+		DIVIDE,
 	};
 
 	class BinaryOperation : public Expression {

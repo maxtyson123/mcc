@@ -23,6 +23,8 @@ namespace mcc::lexer {
 
 		ADD,
 		SUBTRACT,
+		MULTIPLY,
+		DIVIDE,
 
 		LITERAL_INTEGER,
 

@@ -27,6 +27,8 @@ namespace std {
 
 				case mcc::lexer::TokenType::ADD: name = "Add"; break;
 				case mcc::lexer::TokenType::SUBTRACT: name = "Subtract"; break;
+				case mcc::lexer::TokenType::MULTIPLY: name = "Multiply"; break;
+				case mcc::lexer::TokenType::DIVIDE: name = "Divide"; break;
 
 				case mcc::lexer::TokenType::LITERAL_INTEGER:  name = "Integer Literal"; break;
 
@@ -66,6 +68,8 @@ namespace std {
 			switch (op) {
 				case mcc::InternalLanguage::nodes::BinaryOperator::ADD:  name = "Add"; break;
 				case mcc::InternalLanguage::nodes::BinaryOperator::SUBTRACT:  name = "Subtract"; break;
+				case mcc::InternalLanguage::nodes::BinaryOperator::MULTIPLY:  name = "Multiply"; break;
+				case mcc::InternalLanguage::nodes::BinaryOperator::DIVIDE:  name = "Divide"; break;
 			}
 			return std::formatter<std::string_view>::format(name, ctx);
 		}

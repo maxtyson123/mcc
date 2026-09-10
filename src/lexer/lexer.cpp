@@ -123,6 +123,12 @@ Token Lexer::parse_punct_token(const char c) {
 		case '-' :
 			return token_at_current(TokenType::SUBTRACT, std::string(1, c));
 
+		case '*' :
+			return token_at_current(TokenType::MULTIPLY, std::string(1, c));
+
+		case '/' :
+			return token_at_current(TokenType::DIVIDE, std::string(1, c));
+
 		default: {
 			m_errors.report(Stage::PARSER, Severity::ERROR, m_location, "Unknown token of type punctuation");
 			return token_at_current(TokenType::ERROR, std::string(1, c));
@@ -146,6 +152,7 @@ Token Lexer::parse_next() {
 	if (std::isalpha(c) || c == '_')
 		return parse_text_token(c);
 
+	//@todo signedness
 	// Digit
 	if (std::isdigit(c))
 		return parse_digit_token(c);

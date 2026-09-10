@@ -36,7 +36,8 @@ namespace mcc::parser {
 
 			std::unique_ptr<InternalLanguage::nodes::LiteralInteger> parse_literal_integer();
 			std::unique_ptr<InternalLanguage::nodes::Expression> parse_expression();
-			std::unique_ptr<InternalLanguage::nodes::Expression> parse_composite_expression();
+			std::unique_ptr<InternalLanguage::nodes::Expression> parse_composite_expression_higher();
+			std::unique_ptr<InternalLanguage::nodes::Expression> parse_composite_expression_lower();
 
 			std::unique_ptr<InternalLanguage::nodes::StatementReturn> parse_return();
 			std::unique_ptr<InternalLanguage::nodes::Statement> parse_statement();
