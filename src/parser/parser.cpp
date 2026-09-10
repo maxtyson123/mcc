@@ -9,6 +9,7 @@ using namespace mcc::parser;
 using namespace mcc::lexer;
 using namespace mcc::core;
 using namespace mcc::InternalLanguage;
+using namespace mcc::InternalLanguage::nodes;
 
 Parser::Parser(const Lexer& lexer, ErrorReporter& error_reporter)
 : m_lexer(lexer),
@@ -73,11 +74,46 @@ std::unique_ptr<Expression> Parser::parse_expression() {
 
 }
 
+std::unique_ptr<Expression> Parser::parse_composite_expression() {
+
+	std::unique_ptr<Expression> left = parse_expression();
+
+	// Keep building until run out of operators
+	while (true) {
+
+		BinaryOperator op;
+
+		switch (peek().type()) {
+			case TokenType::ADD : {
+				op = BinaryOperator::ADD;
+				break;
+			}
+
+			case TokenType::SUBTRACT : {
+				op = BinaryOperator::SUBTRACT;
+				break;
+			}
+
+			// No more operators to combine right hand expressions
+			default: {
+				return left;
+			}
+		}
+
+		// Consume the operator
+		advance();
+
+		// Left is now chained with the
+		std::unique_ptr<Expression> right = parse_expression();
+		left = std::make_unique<BinaryOperation>(std::move(left), op, std::move(right));
+	}
+}
+
 std::unique_ptr<StatementReturn> Parser::parse_return() {
 
 	// expect: return <expression>
 	expect(TokenType::KEYWORD_RETURN, "Expected 'return' keyword");
-	std::unique_ptr<Expression> expression = parse_expression();
+	std::unique_ptr<Expression> expression = parse_composite_expression();
 
 	if (expression == nullptr)
 		return nullptr;

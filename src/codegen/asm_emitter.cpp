@@ -9,6 +9,7 @@
 using namespace mcc;
 using namespace mcc::codegen;
 using namespace mcc::InternalLanguage;
+using namespace mcc::InternalLanguage::nodes;
 
 AsmEmitter::AsmEmitter() = default;
 
@@ -22,11 +23,47 @@ void AsmEmitter::emit_expression(Expression& expression) {
 
 			auto node = (LiteralInteger&)expression;
 
-			m_output << std::format("mov eax, {}\n", node.value());
+			m_output << std::format("mov rax, {}\n", node.value());
 			break;
+		}
+
+		case NodeType::BinaryOperation : {
+
+			auto& node = (BinaryOperation&)expression;
+
+			std::string op;
+			switch (node.op()) {
+				case BinaryOperator::ADD : {
+					op = "add";
+					break;
+				}
+
+				case BinaryOperator::SUBTRACT : {
+					op = "sub";
+					break;
+				}
+			}
+
+			// Resolve lefthand onto stack
+			emit_expression(*node.left());
+			m_output << std::format("push rax\n");
+
+			// Resolve righthand into eax
+			emit_expression(*node.right());
+			m_output << std::format("push rax\n");
+
+			// Get left and right back
+			m_output << std::format("pop rbx\n");
+			m_output << std::format("pop rax\n");
+
+			// Compute
+			m_output << std::format("{} rax, rbx\n", op);
+			break;
+
 		}
 	}
 }
+
 void AsmEmitter::emit_statement(Statement& statement) {
 
 	switch (statement.type()) {

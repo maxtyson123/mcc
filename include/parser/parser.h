@@ -6,10 +6,12 @@
 #define MCC_PARSER_PARSER_H
 
 
+#include <il/nodes/expression.h>
+#include <il/nodes/statement.h>
+#include <il/nodes/structure.h>
 #include <core/error_reporter.h>
 #include <lexer/lexer.h>
 #include <lexer/token.h>
-#include <il/nodes.h>
 
 namespace mcc::parser {
 
@@ -32,13 +34,15 @@ namespace mcc::parser {
 			Parser(const lexer::Lexer& lexer, core::ErrorReporter& error_reporter);
 			~Parser();
 
+			std::unique_ptr<InternalLanguage::nodes::LiteralInteger> parse_literal_integer();
+			std::unique_ptr<InternalLanguage::nodes::Expression> parse_expression();
+			std::unique_ptr<InternalLanguage::nodes::Expression> parse_composite_expression();
 
-			std::unique_ptr<InternalLanguage::LiteralInteger> parse_literal_integer();
-			std::unique_ptr<InternalLanguage::Expression> parse_expression();
-			std::unique_ptr<InternalLanguage::StatementReturn> parse_return();
-			std::unique_ptr<InternalLanguage::Statement> parse_statement();
-			std::unique_ptr<InternalLanguage::Block> parse_block();
-			std::unique_ptr<InternalLanguage::Function> parse_function();
+			std::unique_ptr<InternalLanguage::nodes::StatementReturn> parse_return();
+			std::unique_ptr<InternalLanguage::nodes::Statement> parse_statement();
+
+			std::unique_ptr<InternalLanguage::nodes::Block> parse_block();
+			std::unique_ptr<InternalLanguage::nodes::Function> parse_function();
 
 	};
 

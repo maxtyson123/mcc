@@ -7,8 +7,7 @@
 
 #include <lexer/token.h>
 #include <core/error_reporter.h>
-
-
+#include <il/nodes/expression.h>
 
 namespace std {
 
@@ -25,6 +24,9 @@ namespace std {
 				case mcc::lexer::TokenType::OPEN_BRACKET: name = "Open Bracket"; break;
 				case mcc::lexer::TokenType::CLOSE_BRACKET: name = "Close Bracket"; break;
 				case mcc::lexer::TokenType::SEMI_COLON: name = "Semi Colon"; break;
+
+				case mcc::lexer::TokenType::ADD: name = "Add"; break;
+				case mcc::lexer::TokenType::SUBTRACT: name = "Subtract"; break;
 
 				case mcc::lexer::TokenType::LITERAL_INTEGER:  name = "Integer Literal"; break;
 
@@ -53,6 +55,17 @@ namespace std {
 			switch (stage) {
 				case mcc::core::Stage::LEXER:  name = "Lexer"; break;
 				case mcc::core::Stage::PARSER:  name = "Parser"; break;
+			}
+			return std::formatter<std::string_view>::format(name, ctx);
+		}
+	};
+
+	template <> struct formatter<mcc::InternalLanguage::nodes::BinaryOperator> : formatter<std::string_view> {
+		auto format(mcc::InternalLanguage::nodes::BinaryOperator op, std::format_context& ctx) const {
+			std::string_view name = "Unknown";
+			switch (op) {
+				case mcc::InternalLanguage::nodes::BinaryOperator::ADD:  name = "Add"; break;
+				case mcc::InternalLanguage::nodes::BinaryOperator::SUBTRACT:  name = "Subtract"; break;
 			}
 			return std::formatter<std::string_view>::format(name, ctx);
 		}

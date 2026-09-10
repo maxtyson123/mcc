@@ -117,6 +117,12 @@ Token Lexer::parse_punct_token(const char c) {
 		case ';' :
 			return token_at_current(TokenType::SEMI_COLON, std::string(1, c));
 
+		case '+' :
+			return token_at_current(TokenType::ADD, std::string(1, c));
+
+		case '-' :
+			return token_at_current(TokenType::SUBTRACT, std::string(1, c));
+
 		default: {
 			m_errors.report(Stage::PARSER, Severity::ERROR, m_location, "Unknown token of type punctuation");
 			return token_at_current(TokenType::ERROR, std::string(1, c));

@@ -21,6 +21,9 @@ namespace mcc::lexer {
 		CLOSE_BRACKET,
 		SEMI_COLON,
 
+		ADD,
+		SUBTRACT,
+
 		LITERAL_INTEGER,
 
 		KEYWORD_INT,
