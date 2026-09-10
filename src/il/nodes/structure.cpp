@@ -54,6 +54,12 @@ std::string Declaration::name() {
 	return m_name;
 }
 
+FunctionDeclaration::FunctionDeclaration(std::string name)
+: FunctionDeclaration(std::move(name), std::make_unique<Block>(std::vector<std::unique_ptr<Statement>>{}))
+{
+
+}
+
 FunctionDeclaration::FunctionDeclaration(std::string name, std::unique_ptr<Block> body)
 : Declaration(std::move(name)),
   m_body(std::move(body))

@@ -76,13 +76,14 @@ void CompilerPipeline::compile() {
 	prog->print(0);
 
 	// Run code generation
-	m_compiled_code << m_assembler.emit_function(*prog);
+	m_compiled_code << m_assembler.emit_program(*prog);
 	validate();
 
 	// Print compiled source code
 	std::printf("\nAssembled Program:\n");
 	std::printf("%s", m_compiled_code.str().c_str());
 }
+
 void CompilerPipeline::write(std::string dest_file) {
 
 	//@todo make dest file

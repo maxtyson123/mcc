@@ -71,6 +71,20 @@ void AsmEmitter::emit_expression(Expression& expression) {
 			// Compute
 			m_output << std::format("{} rax, rbx\n", op);
 			break;
+		}
+
+		case NodeType::VARIABLE_REFERENCE : {
+
+			// Load the variable
+			auto& node = (VariableReference&)expression;
+
+			size_t offset = m_symbols.get_offset(node.name());
+			bool global = offset == 0;
+
+			if (global)
+				m_output << std::format("mov rax, [rel {}]\n",  node.name());
+			else
+				m_output << std::format("mov rax, [rbp - {}]\n",  offset);
 
 		}
 	}
@@ -90,6 +104,11 @@ void AsmEmitter::emit_statement(Statement& statement) {
 			m_output << std::format("jmp {}\n", m_current_exit_label);
 			break;
 		}
+
+		case NodeType::DECLARATION_VARIABLE : {
+			emit_variable_declaration((VariableDeclaration&)statement);
+			return;
+		}
 	}
 
 }
@@ -102,7 +121,28 @@ void AsmEmitter::emit_block(Block& block) {
 
 }
 
-void AsmEmitter::emit_function(FunctionDeclaration& function) {
+void AsmEmitter::emit_variable_declaration(VariableDeclaration& declaration) {
+
+	// Nothing to set as default value
+	auto& node = (VariableDeclaration&)declaration;
+	if (!node.initialiser())
+		return;
+
+	//@todo handle unknown lables
+
+	// Move value into position
+	emit_expression(*node.initialiser());
+
+	size_t offset = m_symbols.get_offset(node.name());
+	bool global = offset == 0;
+
+	if (global)
+		m_output << std::format("mov  [rel {}], rax\n",  node.name());
+	else
+		m_output << std::format("mov [rbp - {}], rax\n",  offset);
+}
+
+void AsmEmitter::emit_function(FunctionDeclaration& function, bool is_setup_function) {
 
 	// Allocate function return
 	m_current_exit_label = m_labels.next();
@@ -112,8 +152,15 @@ void AsmEmitter::emit_function(FunctionDeclaration& function) {
 	m_output << std::format("{}:\n", function.name());
 
 	// Setup stack frame for function
-	m_output << std::format("push rbp\n", function.name());
-	m_output << std::format("mov rbp, rsp\n", function.name());
+	m_output << std::format("push rbp\n");
+	m_output << std::format("mov rbp, rsp\n");
+
+	// Make space for local variables
+	if (!is_setup_function) {
+		m_symbols.clear();
+		size_t var_space = m_frame_allocator.allocate(*function.body(), m_symbols);
+		m_output << std::format("sub rsp, {}\n", var_space);
+	}
 
 	emit_block(*function.body());
 
@@ -135,23 +182,37 @@ void AsmEmitter::emit_declaration(Declaration& declaration) {
 		}
 
 		case NodeType::DECLARATION_VARIABLE : {
-
-			auto& node = (VariableDeclaration&)declaration;
-			size_t offset = m_symbols.new_symbol(node.name());
-
-			//@todo with sematics
-
+			emit_variable_declaration((VariableDeclaration&)declaration);
 			return;
 		}
 	}
 
 }
 
-std::string AsmEmitter::emit_function(Program& program) {
+std::string AsmEmitter::emit_program(Program& program) {
 
-	// Let each declaration emit itself
+	FunctionDeclaration setup("_setup");
+
+	// Allocate global variables
+	m_output << "section .bss\n";
 	for (auto& declaration : program.declarations())
-		emit_declaration(*declaration);
+		if (declaration->type() == NodeType::DECLARATION_VARIABLE) {
+
+			auto& node = (VariableDeclaration&)(*declaration);
+			setup.body()->append(std::move(declaration));
+
+			m_output << std::format("{}:\n", node.name());
+			m_output << "resq 1\n";
+		}
+
+	// Setup global variables
+	m_output << "section .text\n";
+	emit_function(setup, true);
+
+	// Code
+	for (auto& declaration : program.declarations())
+		if (declaration && declaration->type() == NodeType::DECLARATION_FUNCTION)
+			emit_function((FunctionDeclaration&)(*declaration));
 
 	return m_output.str();
 }

@@ -30,7 +30,7 @@ namespace mcc::InternalLanguage::nodes {
 			[[nodiscard]] NodeType type() final;
 	};
 
-	class Declaration : public Node {
+	class Declaration : public Statement {
 
 		private:
 			std::string m_name;
@@ -51,6 +51,7 @@ namespace mcc::InternalLanguage::nodes {
 
 			//@todo return type, params
 
+			FunctionDeclaration(std::string name);
 			FunctionDeclaration(std::string name, std::unique_ptr<Block> body);
 			~FunctionDeclaration() override;
 

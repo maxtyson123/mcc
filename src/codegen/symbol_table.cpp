@@ -5,7 +5,7 @@
 #include <codegen/symbol_table.h>
 
 using namespace mcc;
-using namespace mcc::codgen;
+using namespace mcc::codegen;
 
 SymbolTable::SymbolTable() = default;
 
@@ -14,14 +14,12 @@ SymbolTable::~SymbolTable() = default;
 size_t SymbolTable::next_offset() {
 
 	// @todo variable offsets
-	size_t offset = m_current_offset;
 	m_current_offset += 8;
-
-	return offset;
+	return m_current_offset;
 
 }
 
-size_t SymbolTable::get_offset(std::string symbol) {
+size_t SymbolTable::get_offset(const std::string& symbol) {
 
 	if (auto offset = m_symbols.find(symbol); offset != m_symbols.end())
 		return offset->second;
@@ -39,5 +37,10 @@ size_t SymbolTable::new_symbol(std::string symbol) {
 	add_symbol(symbol, offset);
 
 	return offset;
+}
+
+void SymbolTable::clear() {
+	m_current_offset = 0;
+	m_symbols.clear();
 }
 

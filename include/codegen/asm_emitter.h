@@ -5,6 +5,7 @@
 #ifndef MCC_CODEGEN_ASM_EMITTER_H
 #define MCC_CODEGEN_ASM_EMITTER_H
 
+#include <codegen/frame_allocator.h>
 #include <codegen/label_generator.h>
 #include <codegen/symbol_table.h>
 #include <il/nodes/expression.h>
@@ -23,12 +24,14 @@ namespace mcc::codegen {
 			LabelGenerator m_labels;
 			std::string m_current_exit_label;
 
-			codgen::SymbolTable m_symbols;
+			FrameAllocator m_frame_allocator;
+			SymbolTable m_symbols;
 
 			void emit_expression(InternalLanguage::nodes::Expression& expression);
 			void emit_statement(InternalLanguage::nodes::Statement& statement);
 			void emit_block(InternalLanguage::nodes::Block& block);
-			void emit_function(InternalLanguage::nodes::FunctionDeclaration& function);
+			void emit_function(InternalLanguage::nodes::FunctionDeclaration& function, bool is_setup_function = false);
+			void emit_variable_declaration(InternalLanguage::nodes::VariableDeclaration& declaration);
 			void emit_declaration(InternalLanguage::nodes::Declaration& declaration);
 
 		public:
@@ -36,7 +39,7 @@ namespace mcc::codegen {
 			AsmEmitter();
 			~AsmEmitter();
 
-			std::string emit_function(InternalLanguage::nodes::Program& program);
+			std::string emit_program(InternalLanguage::nodes::Program& program);
 
 	};
 }

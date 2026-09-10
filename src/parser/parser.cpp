@@ -191,6 +191,18 @@ std::unique_ptr<Statement> Parser::parse_statement() {
 			break;
 		}
 
+		case TokenType::KEYWORD_INT : {
+
+			//@todo DRY
+			Token type_token = expect(TokenType::KEYWORD_INT, "Expected declaration type");
+			Token identifier_token = expect(TokenType::IDENTIFIER, "Expected declaration identifier");
+
+			if (type_token.type() == TokenType::ERROR || identifier_token.type() == TokenType::ERROR)
+				return nullptr;
+
+			return parse_variable_declaration(type_token, identifier_token);
+		}
+
 		default: {
 			m_errors.report(Stage::PARSER, Severity::ERROR, next.location(), "Expected a valid statement");
 			advance();

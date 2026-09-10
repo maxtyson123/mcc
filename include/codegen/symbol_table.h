@@ -9,7 +9,7 @@
 #include <string>
 
 
-namespace mcc::codgen {
+namespace mcc::codegen {
 
 	class SymbolTable {
 
@@ -24,10 +24,12 @@ namespace mcc::codgen {
 			SymbolTable();
 			~SymbolTable();
 
-			size_t get_offset(std::string symbol);
+			size_t get_offset(const std::string& symbol);
 
 			void add_symbol(std::string symbol, size_t offset);
 			size_t new_symbol(std::string symbol);
+
+			void clear();
 	};
 
 }

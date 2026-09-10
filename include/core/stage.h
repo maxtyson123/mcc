@@ -11,6 +11,7 @@ namespace mcc::core {
 		SETUP,
 		LEXER,
 		PARSER,
+		CODE_GENERATOR,
 	};
 
 }
