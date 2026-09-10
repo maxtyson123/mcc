@@ -19,7 +19,7 @@ void AsmEmitter::emit_expression(Expression& expression) {
 
 	switch (expression.type()) {
 
-		case NodeType::LiteralInteger : {
+		case NodeType::LITERAL_INTEGER : {
 
 			auto node = (LiteralInteger&)expression;
 
@@ -27,7 +27,7 @@ void AsmEmitter::emit_expression(Expression& expression) {
 			break;
 		}
 
-		case NodeType::BinaryOperation : {
+		case NodeType::BINARY_OPERATION : {
 
 			auto& node = (BinaryOperation&)expression;
 
@@ -102,7 +102,7 @@ void AsmEmitter::emit_block(Block& block) {
 
 }
 
-std::string AsmEmitter::emit_function(Function& function) {
+void AsmEmitter::emit_function(FunctionDeclaration& function) {
 
 	// Allocate function return
 	m_current_exit_label = m_labels.next();
@@ -122,6 +122,36 @@ std::string AsmEmitter::emit_function(Function& function) {
 	m_output << std::format("mov rsp, rbp\n");
 	m_output << std::format("pop rbp\n");
 	m_output << std::format("ret\n");
+
+}
+
+void AsmEmitter::emit_declaration(Declaration& declaration) {
+
+	switch (declaration.type()) {
+
+		case NodeType::DECLARATION_FUNCTION : {
+			emit_function((FunctionDeclaration&)declaration);
+			return;
+		}
+
+		case NodeType::DECLARATION_VARIABLE : {
+
+			auto& node = (VariableDeclaration&)declaration;
+			size_t offset = m_symbols.new_symbol(node.name());
+
+			//@todo with sematics
+
+			return;
+		}
+	}
+
+}
+
+std::string AsmEmitter::emit_function(Program& program) {
+
+	// Let each declaration emit itself
+	for (auto& declaration : program.declarations())
+		emit_declaration(*declaration);
 
 	return m_output.str();
 }

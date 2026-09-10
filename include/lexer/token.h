@@ -25,6 +25,7 @@ namespace mcc::lexer {
 		SUBTRACT,
 		MULTIPLY,
 		DIVIDE,
+		EQUALS,
 
 		LITERAL_INTEGER,
 

@@ -3,6 +3,7 @@
 //
 
 #include <format>
+#include <utility>
 
 #include <il/nodes/expression.h>
 #include <core/print_helpers.h>
@@ -28,8 +29,28 @@ std::string LiteralInteger::to_string() {
 }
 
 NodeType LiteralInteger::type() {
-	return NodeType::LiteralInteger;
+	return NodeType::LITERAL_INTEGER;
 }
+VariableReference::VariableReference(std::string name)
+: m_name(std::move(name))
+{
+}
+
+VariableReference::~VariableReference() = default;
+
+std::string VariableReference::name() {
+	return m_name;
+}
+
+std::string VariableReference::to_string() {
+	return std::format("'{}'", name());
+}
+
+NodeType VariableReference::type() {
+	return NodeType::VARIABLE_REFERENCE;
+}
+
+
 BinaryOperation::BinaryOperation(std::unique_ptr<Expression> m_left, BinaryOperator m_op, std::unique_ptr<Expression> m_right)
 : m_left(std::move(m_left)),
   m_op(m_op),
@@ -55,5 +76,5 @@ std::string BinaryOperation::to_string() {
 	return std::format("({} {} {})", m_left->to_string(), m_op, m_right->to_string());
 }
 NodeType BinaryOperation::type() {
-	return NodeType::BinaryOperation;
+	return NodeType::BINARY_OPERATION;
 }

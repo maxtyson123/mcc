@@ -17,15 +17,21 @@ namespace mcc::InternalLanguage::nodes {
 		UNKNOWN,
 
 		EXPRESSION,
-		LiteralNumber,
-		LiteralInteger,
-		BinaryOperation,
+		LITERAL_NUMBER,
+		LITERAL_INTEGER,
+		BINARY_OPERATION,
+		VARIABLE_REFERENCE,
 
 		STATEMENT,
 		STATEMENT_RETURN,
 
 		BLOCK,
-		FUNCTION,
+
+		DECLARATION,
+		DECLARATION_FUNCTION,
+		DECLARATION_VARIABLE,
+
+		PROGRAM,
 	};
 
 	class Node : public core::MCCObject {

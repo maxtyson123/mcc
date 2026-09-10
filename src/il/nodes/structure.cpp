@@ -5,6 +5,7 @@
 #include <il/nodes/structure.h>
 
 #include <format>
+#include <utility>
 
 using namespace mcc;
 using namespace mcc::InternalLanguage;
@@ -41,29 +42,92 @@ NodeType Block::type() {
 	return NodeType::BLOCK;
 }
 
-Function::Function(std::string name, std::unique_ptr<Block> body)
-: m_name(name),
+Declaration::Declaration(std::string name)
+: m_name(std::move(name))
+{
+
+}
+
+Declaration::~Declaration() = default;
+
+std::string Declaration::name() {
+	return m_name;
+}
+
+FunctionDeclaration::FunctionDeclaration(std::string name, std::unique_ptr<Block> body)
+: Declaration(std::move(name)),
   m_body(std::move(body))
 {
 }
 
-std::string Function::name() {
-	return m_name;
-}
+FunctionDeclaration::~FunctionDeclaration() = default;
 
-std::unique_ptr<Block>& Function::body() {
+std::unique_ptr<Block>& FunctionDeclaration::body() {
 	return m_body;
 }
-std::string Function::to_string() {
-	return std::format("Function({}, {})", m_name, m_body->to_string());
+std::string FunctionDeclaration::to_string() {
+	return std::format("Function({}, {})", name(), m_body->to_string());
 }
 
-void Function::print(size_t indent) {
+void FunctionDeclaration::print(size_t indent) {
 
-	print_indented_string(indent, std::format("Function'{}'()", m_name).c_str());
+	print_indented_string(indent, std::format("Function'{}'()", name()).c_str());
 	m_body->print(indent + 1);
 }
 
-NodeType Function::type() {
-	return NodeType::FUNCTION;
+NodeType FunctionDeclaration::type() {
+	return NodeType::DECLARATION_FUNCTION;
 }
+
+VariableDeclaration::VariableDeclaration(std::string name, std::unique_ptr<Expression> initialiser)
+: Declaration(std::move(name)),
+  m_initialiser(std::move(initialiser))
+{
+}
+
+VariableDeclaration::~VariableDeclaration() = default;
+
+std::unique_ptr<Expression>& VariableDeclaration::initialiser() {
+	return m_initialiser;
+}
+std::string VariableDeclaration::to_string() {
+	return std::format("Variable({} = {})", name(), m_initialiser ? m_initialiser->to_string() : "null");
+}
+
+NodeType VariableDeclaration::type() {
+	return NodeType::DECLARATION_VARIABLE;
+}
+
+Program::Program(std::vector<std::unique_ptr<Declaration>> declarations)
+: m_declarations(std::move(declarations))
+{
+
+}
+
+Program::~Program() = default;
+
+void Program::append(std::unique_ptr<Declaration> declaration) {
+	m_declarations.push_back(std::move(declaration));
+}
+
+std::vector<std::unique_ptr<Declaration>>& Program::declarations() {
+	return m_declarations;
+}
+
+std::string Program::to_string() {
+	return std::format("Block of {} statements", m_declarations.size());
+}
+
+void Program::print(size_t indent) {
+
+	for (auto& declaration : declarations())
+		declaration->print(indent);
+
+}
+
+NodeType Program::type() {
+	return NodeType::PROGRAM;
+}
+
+
+

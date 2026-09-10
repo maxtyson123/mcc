@@ -56,7 +56,7 @@ void CompilerPipeline::validate() {
 
 	// Cant continue to next stage
 	if (m_errors.has_errors())
-		m_errors.fatal("Pipeline stage failed with");
+		m_errors.fatal("Pipeline stage failed with errors");
 
 }
 
@@ -68,7 +68,7 @@ void CompilerPipeline::compile() {
 
 	// Run syntactic analysis
 	m_parser->load_tokens(std::make_unique<std::vector<Token>>(tokens));
-	std::unique_ptr<Function> prog = m_parser->parse_function();
+	std::unique_ptr<Program> prog = m_parser->parse_program();
 	validate();
 
 	// Print AST

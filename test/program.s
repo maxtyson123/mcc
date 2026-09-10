@@ -4,7 +4,6 @@ push rbp
 mov rbp, rsp
 mov rax, 2
 push rax
-mov rax, 5
 push rax
 mov rax, 8
 push rax

@@ -35,6 +35,24 @@ namespace mcc::InternalLanguage::nodes {
 			[[nodiscard]] NodeType type() final;
 	};
 
+	class VariableReference : public Expression {
+
+		private:
+			std::string m_name;
+
+		public:
+
+			VariableReference(std::string name);
+			~VariableReference() override;
+
+			[[nodiscard]] std::string name();
+
+			[[nodiscard]] std::string to_string() final;
+
+			[[nodiscard]] NodeType type() final;
+
+	};
+
 	enum class BinaryOperator {
 
 		ADD,

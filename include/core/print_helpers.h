@@ -29,6 +29,7 @@ namespace std {
 				case mcc::lexer::TokenType::SUBTRACT: name = "Subtract"; break;
 				case mcc::lexer::TokenType::MULTIPLY: name = "Multiply"; break;
 				case mcc::lexer::TokenType::DIVIDE: name = "Divide"; break;
+				case mcc::lexer::TokenType::EQUALS: name = "Equals"; break;
 
 				case mcc::lexer::TokenType::LITERAL_INTEGER:  name = "Integer Literal"; break;
 
