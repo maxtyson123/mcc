@@ -10,8 +10,8 @@ using namespace mcc::core;
 ErrorReporter::ErrorReporter() = default;
 ErrorReporter::~ErrorReporter() = default;
 
-void ErrorReporter::report(Severity severity, const SourceLocation& location, const std::string& message) {
-    m_errors.push_back({severity, location, message});
+void ErrorReporter::report(Stage stage, Severity severity, const SourceLocation& location, const std::string& message) {
+    m_errors.emplace_back(stage, severity, location, message);
 }
 
 bool ErrorReporter::has_errors() {

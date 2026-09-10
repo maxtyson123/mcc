@@ -8,8 +8,9 @@
 using namespace mcc;
 using namespace mcc::core;
 
-CompilerError::CompilerError(Severity severity, SourceLocation location, const std::string& message)
-: m_severity(severity),
+CompilerError::CompilerError(Stage stage, Severity severity, SourceLocation location, const std::string& message)
+: m_stage(stage),
+  m_severity(severity),
   m_location(location),
   m_message(message)
 {
@@ -22,7 +23,7 @@ Severity CompilerError::severity() const {
 }
 
 std::string CompilerError::to_string() {
-  return std::format("{}: {} - {}", m_severity, m_location.to_string(), m_message);
+  return std::format("{} {}: {} - {}", m_stage, m_severity, m_location.to_string(), m_message);
 }
 
 

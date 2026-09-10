@@ -12,7 +12,8 @@ namespace mcc::core {
 	class MCCObject {
 
 		public:
-			[[nodiscard]] virtual std::string to_string() = 0;
+		virtual ~MCCObject() = default;
+		[[nodiscard]] virtual std::string to_string() = 0;
 
 
 	};

@@ -1,4 +1,5 @@
 #include "_drivers/cpp/cpp_driver_config.h"
+#include "parser/parser.h"
 
 
 #include <core/mcc_object.h>
@@ -10,8 +11,10 @@
 #include <sstream>
 
 using namespace mcc;
+using namespace mcc::InternalLanguage;
 using namespace mcc::core;
 using namespace mcc::lexer;
+using namespace mcc::parser;
 using namespace mcc::drivers;
 using namespace mcc::drivers::cpp;
 
@@ -40,15 +43,12 @@ int main() {
 	ErrorReporter errors;
 	Lexer lexer(content, "main.cpp", cpp.lexer_config(), errors);
 
-	Token out = lexer.next();
-	while (true) {
-		std::printf("Token: %s\n", out.to_string().c_str());
+	//todo parse as program not function
+	Parser parser(lexer, errors);
+	std::unique_ptr<Function> prog = parser.parse_function();
 
-		if (out.kind() == TokenKind::END_OF_FILE)
-			break;
-
-		out = lexer.next();
-	}
+	std::printf("Program:\n");
+	prog->print(0);
 
 	errors.print_all();
     return 0;

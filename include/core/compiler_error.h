@@ -6,8 +6,9 @@
 #define MCC_CORE_COMPILER_ERROR_H
 
 #include <string>
-#include <core/source_location.h>
 #include <core/mcc_object.h>
+#include <core/source_location.h>
+#include <core/stage.h>
 
 namespace mcc::core {
 
@@ -19,13 +20,14 @@ namespace mcc::core {
     class CompilerError : public MCCObject {
 
         private:
+    		Stage m_stage;
             Severity m_severity;
             SourceLocation m_location;
             std::string m_message;
 
         public:
 
-            CompilerError(Severity severity, SourceLocation location, const std::string& message);
+            CompilerError(Stage stage, Severity severity, SourceLocation location, const std::string& message);
             ~CompilerError();
 
             [[nodiscard]] Severity severity() const;

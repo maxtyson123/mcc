@@ -47,6 +47,17 @@ namespace std {
 		}
 	};
 
+	template <> struct formatter<mcc::core::Stage> : formatter<std::string_view> {
+		auto format(mcc::core::Stage stage, std::format_context& ctx) const {
+			std::string_view name = "Unknown";
+			switch (stage) {
+				case mcc::core::Stage::LEXER:  name = "Lexer"; break;
+				case mcc::core::Stage::PARSER:  name = "Parser"; break;
+			}
+			return std::formatter<std::string_view>::format(name, ctx);
+		}
+	};
+
 }
 
 #endif//MCC_PRINT_HELPERS_H

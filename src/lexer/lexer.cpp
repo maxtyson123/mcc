@@ -118,7 +118,7 @@ Token Lexer::parse_punct_token(const char c) {
 			return token_at_current(TokenKind::SEMI_COLON, std::string(1, c));
 
 		default: {
-			m_errors.report(Severity::ERROR, m_location, "Unknown token of type punctuation");
+			m_errors.report(Stage::PARSER, Severity::ERROR, m_location, "Unknown token of type punctuation");
 			return token_at_current(TokenKind::ERROR, std::string(1, c));
 		}
 
@@ -149,7 +149,7 @@ Token Lexer::parse_next() {
 		return parse_punct_token(c);
 
 	// Must not be a known token
-	m_errors.report(Severity::ERROR, m_location, "Unknown token");
+	m_errors.report(Stage::LEXER, Severity::ERROR, m_location, "Unknown token");
 	return token_at_current(TokenKind::ERROR, std::string(1, c));
 
 }
