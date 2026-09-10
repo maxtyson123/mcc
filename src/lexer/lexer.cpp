@@ -130,7 +130,7 @@ Token Lexer::parse_punct_token(const char c) {
 			return token_at_current(TokenType::DIVIDE, std::string(1, c));
 
 		default: {
-			m_errors.report(Stage::PARSER, Severity::ERROR, m_location, "Unknown token of type punctuation");
+			m_errors.report(Stage::LEXER, Severity::ERROR, m_location, "Unknown token of type punctuation");
 			return token_at_current(TokenType::ERROR, std::string(1, c));
 		}
 
@@ -189,4 +189,22 @@ Token Lexer::peek(const size_t offset) {
 
 bool Lexer::at_end() const {
 	return  m_source_code.empty() || m_pos == m_source_code.size();
+}
+
+std::vector<Token> Lexer::tokenize_all() {
+
+	std::vector<Token> out = {};
+
+	Token token = next();
+	while (true) {
+		out.push_back(token);
+
+		// No more code to tokenize
+		if (token.type() == TokenType::END_OF_FILE)
+			break;
+
+		token = next();
+	}
+
+	return out;
 }

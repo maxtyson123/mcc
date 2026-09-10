@@ -20,6 +20,7 @@ namespace mcc::core {
             ~ErrorReporter();
 
             void report(Stage stage, Severity severity, const SourceLocation& location, const std::string& message);
+    		void fatal(const std::string& message);
 
             [[nodiscard]] bool has_errors();
             [[nodiscard]] const std::vector<CompilerError>& errors();

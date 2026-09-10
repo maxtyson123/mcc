@@ -11,24 +11,26 @@ using namespace mcc::core;
 using namespace mcc::InternalLanguage;
 using namespace mcc::InternalLanguage::nodes;
 
-Parser::Parser(const Lexer& lexer, ErrorReporter& error_reporter)
-: m_lexer(lexer),
-  m_errors(error_reporter),
-  m_current_token(m_lexer.next())
+Parser::Parser(ErrorReporter& error_reporter)
+: m_errors(error_reporter)
 {
 
 }
 
 Parser::~Parser() = default;
 
+void Parser::load_tokens(std::unique_ptr<std::vector<Token>> tokens) {
+	m_tokens = std::move(tokens);
+	m_current_token = m_tokens->begin();
+}
+
 Token Parser::peek() {
-	return m_current_token;
+	return *m_current_token;
 }
 
 Token Parser::advance() {
 
-	Token current = m_current_token;
-	m_current_token = m_lexer.next();
+	Token current = *(m_current_token++);
 	return current;
 }
 

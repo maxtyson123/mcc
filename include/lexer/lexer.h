@@ -51,6 +51,7 @@ namespace mcc::lexer {
 			Token peek(size_t offset = 0);
 
 			[[nodiscard]] bool at_end() const;
+			[[nodiscard]] std::vector<Token> tokenize_all();
 
 	};
 

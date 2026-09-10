@@ -19,10 +19,11 @@ namespace mcc::parser {
 
 		private:
 
-			lexer::Lexer m_lexer;
+
 			core::ErrorReporter& m_errors;
 
-			lexer::Token m_current_token;
+			std::unique_ptr<std::vector<lexer::Token>> m_tokens;
+			std::vector<lexer::Token>::const_iterator m_current_token;
 
 			lexer::Token peek();
 			lexer::Token advance();
@@ -31,8 +32,10 @@ namespace mcc::parser {
 			lexer::Token expect(lexer::TokenType type, const std::string& message);
 
 		public:
-			Parser(const lexer::Lexer& lexer, core::ErrorReporter& error_reporter);
+			Parser(core::ErrorReporter& error_reporter);
 			~Parser();
+
+			void load_tokens(std::unique_ptr<std::vector<lexer::Token>> tokens);
 
 			std::unique_ptr<InternalLanguage::nodes::LiteralInteger> parse_literal_integer();
 			std::unique_ptr<InternalLanguage::nodes::Expression> parse_expression();

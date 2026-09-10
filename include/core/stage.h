@@ -8,6 +8,7 @@
 namespace mcc::core {
 
 	enum class Stage {
+		SETUP,
 		LEXER,
 		PARSER,
 	};

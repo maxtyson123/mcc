@@ -55,6 +55,7 @@ namespace std {
 		auto format(mcc::core::Stage stage, std::format_context& ctx) const {
 			std::string_view name = "Unknown";
 			switch (stage) {
+				case mcc::core::Stage::SETUP:  name = "Setup"; break;
 				case mcc::core::Stage::LEXER:  name = "Lexer"; break;
 				case mcc::core::Stage::PARSER:  name = "Parser"; break;
 			}
