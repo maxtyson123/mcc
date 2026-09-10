@@ -13,15 +13,16 @@ FrameAllocator::~FrameAllocator() = default;
 
 size_t FrameAllocator::allocate(Block& block, SymbolTable& symbols) {
 
-	size_t space = 0;
+	size_t highest_offset = 0;
 
 	for (auto& statement : block.statements())
 		if (statement->type() == NodeType::DECLARATION_VARIABLE) {
 
 			// Reserve space and define the variable
 			auto& var_decl = (VariableDeclaration&)(*statement);
-			space += symbols.new_symbol(var_decl.name());
+			highest_offset = symbols.new_symbol(var_decl.name());
 
 		}
-	return space;
+
+	return highest_offset;
 }

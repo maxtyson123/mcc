@@ -31,6 +31,8 @@ namespace mcc::lexer {
 
 		KEYWORD_INT,
 		KEYWORD_RETURN,
+
+		COMMENT_LINE,
 	};
 
 	class Token : core::MCCObject {

@@ -24,6 +24,7 @@ namespace mcc::InternalLanguage::nodes {
 
 		STATEMENT,
 		STATEMENT_RETURN,
+		COMMENT,
 
 		BLOCK,
 

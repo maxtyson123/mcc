@@ -98,6 +98,27 @@ Token Lexer::parse_digit_token(char c) {
 
 	return token_at_current(TokenType::LITERAL_INTEGER, lexeme);
 }
+
+Token Lexer::parse_comment_token(char c) {
+
+	// @todo multiline comment and inline
+
+	// Consume the comment starter
+	std::string lexeme = "/";
+	char type = consume();
+	lexeme.push_back(type);
+
+
+	// Get whole lexeme
+	while (lookahead() != '\n') {
+		c = consume();
+		lexeme.push_back(c);
+	}
+
+	return token_at_current(TokenType::COMMENT_LINE, lexeme);
+}
+
+
 Token Lexer::parse_punct_token(const char c) {
 
 	switch (c) {
@@ -126,11 +147,15 @@ Token Lexer::parse_punct_token(const char c) {
 		case '*' :
 			return token_at_current(TokenType::MULTIPLY, std::string(1, c));
 
-		case '/' :
-			return token_at_current(TokenType::DIVIDE, std::string(1, c));
-
 		case '=' :
 			return token_at_current(TokenType::EQUALS, std::string(1, c));
+
+		case '/' : {
+			if (lookahead() == '/')
+				return parse_comment_token(c);
+
+			return token_at_current(TokenType::DIVIDE, std::string(1, c));
+		}
 
 		default: {
 			m_errors.report(Stage::LEXER, Severity::ERROR, m_location, "Unknown token of type punctuation");

@@ -33,6 +33,24 @@ namespace mcc::InternalLanguage::nodes {
 			[[nodiscard]] NodeType type() final;
 	};
 
+	class Comment : public Statement {
+
+
+		private:
+			std::string m_message;
+
+		public:
+			Comment(std::string message);
+			~Comment();
+
+			[[nodiscard]] std::string message();
+
+			[[nodiscard]] std::string to_string() final;
+
+			[[nodiscard]] NodeType type() final;
+
+	};
+
 }
 
 

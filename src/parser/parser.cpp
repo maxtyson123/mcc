@@ -203,6 +203,11 @@ std::unique_ptr<Statement> Parser::parse_statement() {
 			return parse_variable_declaration(type_token, identifier_token);
 		}
 
+		case TokenType::COMMENT_LINE : {
+			Token message = expect(TokenType::COMMENT_LINE, "Expected a comment");
+			return std::make_unique<Comment>(message.lexeme());
+		}
+
 		default: {
 			m_errors.report(Stage::PARSER, Severity::ERROR, next.location(), "Expected a valid statement");
 			advance();

@@ -29,3 +29,21 @@ std::string StatementReturn::to_string() {
 NodeType StatementReturn::type() {
 	return NodeType::STATEMENT_RETURN;
 }
+
+Comment::Comment(std::string message)
+: m_message(std::move(message))
+{
+}
+
+Comment::~Comment() = default;
+
+std::string Comment::message() {
+	return m_message;
+}
+std::string Comment::to_string() {
+	return std::format("Comment({})", message());
+}
+NodeType Comment::type() {
+	return NodeType::COMMENT;
+}
+
