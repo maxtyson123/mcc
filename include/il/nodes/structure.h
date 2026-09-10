@@ -82,9 +82,10 @@ namespace mcc::InternalLanguage::nodes {
 	class Program : public Node {
 
 		private:
-			std::vector<std::unique_ptr<Declaration>> m_declarations;
+			std::vector<std::unique_ptr<Declaration>> m_declarations = {};
 
 		public:
+			Program();
 			Program(std::vector<std::unique_ptr<Declaration>> declarations);
 			~Program();
 

@@ -104,6 +104,8 @@ NodeType VariableDeclaration::type() {
 	return NodeType::DECLARATION_VARIABLE;
 }
 
+Program::Program() = default;
+
 Program::Program(std::vector<std::unique_ptr<Declaration>> declarations)
 : m_declarations(std::move(declarations))
 {

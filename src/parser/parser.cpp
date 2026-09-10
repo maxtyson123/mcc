@@ -288,17 +288,14 @@ std::unique_ptr<Declaration> Parser::parse_declaration() {
 
 std::unique_ptr<Program> Parser::parse_program() {
 
-	// <declaration>; <declaration>; ...;
-	std::vector<std::unique_ptr<Declaration>> declarations = {};
 
 	// Add all the statements
+	auto program = std::make_unique<Program>();
+
 	while (!check(TokenType::END_OF_FILE)) {
-
-		// Get the next valid statement
-		if (std::unique_ptr<Declaration> statement = parse_declaration())
-			declarations.push_back(std::move(statement));
-
+		if (std::unique_ptr<Declaration> declaration = parse_declaration())
+			program->append(std::move(declaration));
 	}
 
-	return std::make_unique<Program>(std::move(declarations));
+	return program;
 }
