@@ -1,13 +1,12 @@
-int x = 5;
+int x = 4;
 int y = 3;
-int z = 2;
 
 int main() {
-	int a = 10;
-	int b = 8;
-	int c = 1;
+	int a = 2;
+	int b = 4;
 
-	// Evaluates to: (2 + (5 * 8)) * 1 = 42
-	// return (z + (x * b)) * c;
-	 return z + x * b * c;
+	// Without parentheses:     x + y  *  a + b   =  4 + (3 * 2) + 4    =    14    = 14
+	//   With  parentheses:    (x + y) * (a + b)  =  (4 + 3) * (2 + 4)  =  7 * 6  =  42
+
+	return (x + y) * (a + b);
 }

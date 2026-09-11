@@ -79,6 +79,14 @@ std::unique_ptr<Expression> Parser::parse_value_expression() {
 			return parse_variable_reference();
 		}
 
+		case TokenType::OPEN_PARENTHESES : {
+			advance();
+			auto inner = parse_expression();
+
+			expect(TokenType::CLOSE_PARENTHESES, "Expected closing parenthesis to match '('");
+			return inner;
+		}
+
 		default: {
 			m_errors.report(Stage::PARSER, Severity::ERROR, next.location(), "Expected a valid expression");
 			advance();

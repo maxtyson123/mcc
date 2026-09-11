@@ -48,7 +48,14 @@ void Lexer::skip_whitespace() {
 			}
 
 			// Whitespace
-			case '\t':
+			case '\t': {
+				m_location.increment_col();
+				m_location.increment_col();
+				m_location.increment_col();
+
+				// fall thru to handle the char itself
+			}
+
 			case ' ': {
 				consume();
 				break;
