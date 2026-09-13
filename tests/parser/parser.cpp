@@ -32,6 +32,16 @@ namespace mcc::tests {
         auto& fn = (FunctionDeclaration&)(*decl);
         return fn.body()->statements();
     }
+
+	std::unique_ptr<Statement> parse_single_statement(const std::string& source, ErrorReporter& errors) {
+    	CPPDriverConfig config;
+    	Lexer lexer(source, "test.cpp", config.lexer_config(), errors);
+    	std::vector<Token> tokens = lexer.tokenize_all();
+
+    	Parser parser(errors);
+    	parser.load_tokens(std::make_unique<std::vector<Token>>(tokens));
+    	return parser.parse_statement();
+    }
 }
 
 TEST_CASE("multiply binds tighter than add") {
@@ -245,5 +255,59 @@ TEST_CASE("a malformed statement reports an error but does not crash the parser"
 TEST_CASE("a missing closing parenthesis is reported, not silently accepted") {
     ErrorReporter errors;
     auto program = mcc::tests::parse_source("int main() { return (1 + 2; }", errors);
+    REQUIRE(errors.has_errors());
+}
+
+
+TEST_CASE("an assignment statement parses the target name and the value expression") {
+    ErrorReporter errors;
+    auto stmt = mcc::tests::parse_single_statement("x = 5;", errors);
+    REQUIRE_FALSE(errors.has_errors());
+    REQUIRE(stmt != nullptr);
+
+    // NOTE: matches the current spelling of the enum value - rename this
+    // alongside the enum if/when the STATEMNET_ASSIGN typo gets fixed.
+    REQUIRE(stmt->type() == NodeType::STATEMNET_ASSIGN);
+
+    auto& assignment = static_cast<Assignment&>(*stmt);
+    REQUIRE(assignment.variable() == "x");
+    REQUIRE(assignment.value()->type() == NodeType::LITERAL_INTEGER);
+    REQUIRE(static_cast<LiteralInteger&>(*assignment.value()).value() == 5);
+}
+
+TEST_CASE("the right-hand side of an assignment can be any expression, not just a literal") {
+    ErrorReporter errors;
+    auto stmt = mcc::tests::parse_single_statement("x = 1 + y * 2;", errors);
+    REQUIRE_FALSE(errors.has_errors());
+
+    auto& assignment = static_cast<Assignment&>(*stmt);
+    REQUIRE(assignment.value()->type() == NodeType::BINARY_OPERATION);
+}
+
+TEST_CASE("assigning the result of a comparison is accepted by the parser") {
+    ErrorReporter errors;
+    auto stmt = mcc::tests::parse_single_statement("flag = 1 < 2;", errors);
+    REQUIRE_FALSE(errors.has_errors());
+
+    auto& assignment = static_cast<Assignment&>(*stmt);
+    REQUIRE(assignment.variable() == "flag");
+    REQUIRE(assignment.value()->type() == NodeType::BINARY_OPERATION);
+}
+
+TEST_CASE("a missing semicolon after an assignment is reported") {
+    ErrorReporter errors;
+    mcc::tests::parse_single_statement("x = 5", errors);
+    REQUIRE(errors.has_errors());
+}
+
+TEST_CASE("a missing value after = is reported, not silently accepted") {
+    ErrorReporter errors;
+    mcc::tests::parse_single_statement("x = ;", errors);
+    REQUIRE(errors.has_errors());
+}
+
+TEST_CASE("an identifier statement with no following = is reported as an error") {
+    ErrorReporter errors;
+    mcc::tests::parse_single_statement("x;", errors);
     REQUIRE(errors.has_errors());
 }

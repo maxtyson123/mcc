@@ -310,6 +310,8 @@ std::unique_ptr<Statement> Parser::parse_statement() {
 
 		case TokenType::IDENTIFIER : {
 
+			//todo careful for func calls below needs to lookahed for assign
+
 			// expect: <identifier> = <expression>;
 			Token message = expect(TokenType::IDENTIFIER, "Expected an identifier");
 			expect(TokenType::ASSIGN, "Expected assignment to identifier");
