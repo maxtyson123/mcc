@@ -77,7 +77,6 @@ void AsmEmitter::emit_expression(Expression& expression) {
 					break;
 				}
 
-
 				case BinaryOperator::LESS_THAN_EQ : {
 					op = "setle";
 					comparison = true;
@@ -199,6 +198,15 @@ void AsmEmitter::emit_statement(Statement& statement) {
 			break;
 		}
 
+		case NodeType::STATEMNET_ASSIGN : {
+
+			auto& node = (Assignment&)statement;
+			emit_expression(*node.value());
+
+			move_rax_into_var(node.variable());
+			return;
+		}
+
 		case NodeType::DECLARATION_VARIABLE : {
 			emit_variable_declaration((VariableDeclaration&)statement);
 			return;
@@ -240,14 +248,7 @@ void AsmEmitter::emit_variable_declaration(VariableDeclaration& declaration) {
 
 	// Move value into position
 	emit_expression(*node.initialiser());
-
-	size_t offset = m_symbols.get_offset(node.name());
-	bool global = offset == 0;
-
-	if (global)
-		m_output << std::format("mov  [rel {}], rax\n",  node.name());
-	else
-		m_output << std::format("mov [rbp - {}], rax\n",  offset);
+	move_rax_into_var(node.name());
 }
 
 void AsmEmitter::emit_function(FunctionDeclaration& function, bool is_setup_function) {
@@ -294,6 +295,18 @@ void AsmEmitter::emit_declaration(Declaration& declaration) {
 			return;
 		}
 	}
+
+}
+
+void AsmEmitter::move_rax_into_var(std::string var) {
+
+	size_t offset = m_symbols.get_offset(var);
+	bool global = offset == 0;
+
+	if (global)
+		m_output << std::format("mov  [rel {}], rax\n",  var);
+	else
+		m_output << std::format("mov [rbp - {}], rax\n",  offset);
 
 }
 

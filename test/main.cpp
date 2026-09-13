@@ -3,12 +3,12 @@ int y = 24;
 
 int main() {
 	int a = 4;
-	int b = 4;
+	int b = 2;
 
-	if (a == b) {
+	if (a != b) {
 		x = 42;
 		return x;
 	}
 	else
-		return y;
+		return x;
 }
