@@ -7,6 +7,7 @@
 
 #include <string>
 #include <core/compiler_error.h>
+#include <vector>
 
 namespace mcc::core {
 
