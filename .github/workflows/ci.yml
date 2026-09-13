@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+    branches: [ "**" ]
+  pull_request:
+    branches: [ "**" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y nasm build-essential cmake
+
+      - name: Configure CMake
+        run: cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build Project & Test Suite
+        run: cmake --build build --config Release -j$(nproc)
+
+      - name: Run Unit Tests (Catch2)
+        run: ctest --test-dir build --output-on-failure
+
+      - name: Run E2E Integration Test (Expect Exit Code 42)
+        run: |
+          # Build test/main.cpp
+          cd build
+          ./mcc
+          cd ..
+
+          # Assemble generated assembly code
+          nasm -f elf64 test/program.s -o test/program.o
+          nasm -f elf64 test/_start.s -o test/_start.o
+
+          # Link the object files together
+          ld test/program.o test/_start.o -o test/program
+
+          # Execute the compiled binary and check its exit code
+          ./test/program
+          EXIT_CODE=$?
+          echo "Program exited with code: $EXIT_CODE"
+
+          if [ "$EXIT_CODE" -eq 42 ]; then
+            echo "Integration test passed successfully!"
+          else
+            echo "Integration test failed: expected exit code 42, got $EXIT_CODE."
+            exit 1
+          fi

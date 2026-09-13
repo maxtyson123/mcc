@@ -298,6 +298,7 @@ std::unique_ptr<Statement> Parser::parse_statement() {
 			return parse_block();
 		}
 
+		case TokenType::CONTROL_WHILE :
 		case TokenType::CONTROL_IF : {
 			return parse_control_statement();
 		}

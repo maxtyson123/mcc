@@ -136,10 +136,10 @@ Token Lexer::parse_comparison_token(char c) {
 			return token_at_current(TokenType::EQUALITY, lexeme);
 
 		case '<':
-			return token_at_current(equality ? TokenType::LESS_THAN : TokenType::LESS_THAN_EQ, lexeme);
+			return token_at_current(equality ? TokenType::LESS_THAN_EQ : TokenType::LESS_THAN, lexeme);
 
 		case '>':
-			return token_at_current(equality ? TokenType::MORE_THAN : TokenType::MORE_THAN_EQ, lexeme);
+			return token_at_current(equality ? TokenType::MORE_THAN_EQ : TokenType::MORE_THAN, lexeme);
 
 	}
 

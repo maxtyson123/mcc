@@ -85,13 +85,13 @@ void AsmEmitter::emit_expression(Expression& expression) {
 				}
 
 				case BinaryOperator::MORE_THAN : {
-					op = "setm";
+					op = "setg";
 					comparison = true;
 					break;
 				}
 
 				case BinaryOperator::MORE_THAN_EQ : {
-					op = "setme";
+					op = "setge";
 					comparison = true;
 					break;
 				}

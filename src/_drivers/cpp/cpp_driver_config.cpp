@@ -25,7 +25,7 @@ LexerConfig CPPDriverConfig::build_lexer_config() {
 			{"return", TokenType::KEYWORD_RETURN},
 			{"if", TokenType::CONTROL_IF},
 			{"else", TokenType::CONTROL_ELSE},
-			{"when", TokenType::CONTROL_WHILE},
+			{"while", TokenType::CONTROL_WHILE},
 		}
 	};
 }
