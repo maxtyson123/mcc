@@ -5,11 +5,13 @@
 #ifndef MCC_LEXER_LEXER_H
 #define MCC_LEXER_LEXER_H
 
-#include "core/error_reporter.h"
+#include <core/error_reporter.h>
 
 
 #include <lexer/token.h>
 #include <unordered_map>
+#include <deque>
+#include <vector>
 
 namespace mcc::lexer {
 

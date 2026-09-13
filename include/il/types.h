@@ -8,8 +8,10 @@
 
 #ifndef MCC_INTERNAL_LANGUAGE_TYPES_H
 #define MCC_INTERNAL_LANGUAGE_TYPES_H
+
 #include <cstdint>
 #include <vector>
+#include <string>
 
 namespace mcc::InternalLanguage {
 
