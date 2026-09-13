@@ -153,3 +153,34 @@ TEST_CASE("a global initialiser runs before main via setup function") {
     REQUIRE(contains(asm_out, "_setup:"));
     REQUIRE(contains(asm_out, "global _setup"));
 }
+
+
+TEST_CASE("assigning to a local variable writes to its rbp-relative slot") {
+    ErrorReporter errors;
+    std::string asm_out = compile("int main() { int x = 1; x = 2; return x; }", errors);
+    REQUIRE_FALSE(errors.has_errors());
+
+    REQUIRE(contains(asm_out, "mov rax, 2"));
+    REQUIRE(contains(asm_out, "mov [rbp - 8], rax"));
+}
+
+TEST_CASE("assigning to a global variable writes to its label, not a stack slot") {
+    ErrorReporter errors;
+    std::string asm_out = compile("int g = 1; int main() { g = 2; return g; }", errors);
+    REQUIRE_FALSE(errors.has_errors());
+
+    REQUIRE(contains(asm_out, "[rel g], rax"));
+}
+
+TEST_CASE("an assignment's right-hand side is fully evaluated before the store") {
+    ErrorReporter errors;
+    std::string asm_out = compile("int main() { int x = 1; x = 1 + 2; return x; }", errors);
+    REQUIRE_FALSE(errors.has_errors());
+
+	size_t add_pos = asm_out.find("add rax, rbx");
+    size_t store_pos = asm_out.find("mov [rbp - 8], rax", add_pos);
+
+    REQUIRE(add_pos != std::string::npos);
+    REQUIRE(store_pos != std::string::npos);
+    REQUIRE(store_pos > add_pos);
+}

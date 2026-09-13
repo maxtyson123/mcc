@@ -35,7 +35,6 @@ namespace mcc::InternalLanguage::nodes {
 
 	class Comment : public Statement {
 
-
 		private:
 			std::string m_message;
 
@@ -44,6 +43,25 @@ namespace mcc::InternalLanguage::nodes {
 			~Comment();
 
 			[[nodiscard]] std::string message();
+
+			[[nodiscard]] std::string to_string() final;
+
+			[[nodiscard]] NodeType type() final;
+
+	};
+
+	class Assignment : public Statement {
+
+		private:
+			std::string m_variable;
+			std::unique_ptr<Expression> m_value;
+
+		public:
+			Assignment(std::string variable, std::unique_ptr<Expression> value);
+			~Assignment();
+
+			[[nodiscard]] std::string variable();
+			[[nodiscard]] std::unique_ptr<Expression>& value();
 
 			[[nodiscard]] std::string to_string() final;
 

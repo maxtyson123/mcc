@@ -308,6 +308,19 @@ std::unique_ptr<Statement> Parser::parse_statement() {
 			return std::make_unique<Comment>(message.lexeme());
 		}
 
+		case TokenType::IDENTIFIER : {
+
+			//todo careful for func calls below needs to lookahed for assign
+
+			// expect: <identifier> = <expression>;
+			Token message = expect(TokenType::IDENTIFIER, "Expected an identifier");
+			expect(TokenType::ASSIGN, "Expected assignment to identifier");
+			std::unique_ptr<Expression> value = parse_expression();
+			expect(TokenType::SEMI_COLON, "Expected semicolon to close statement");
+
+			return std::make_unique<Assignment>(message.lexeme(), std::move(value));
+		}
+
 		default: {
 			m_errors.report(Stage::PARSER, Severity::ERROR, next.location(), "Expected a valid statement");
 			advance();

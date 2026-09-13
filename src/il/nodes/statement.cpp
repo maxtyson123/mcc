@@ -47,3 +47,26 @@ NodeType Comment::type() {
 	return NodeType::COMMENT;
 }
 
+Assignment::Assignment(std::string variable, std::unique_ptr<Expression> value)
+: m_variable(std::move(variable)),
+  m_value(std::move(value))
+{
+}
+
+Assignment::~Assignment() = default;
+
+std::string Assignment::variable() {
+	return m_variable;
+}
+
+std::unique_ptr<Expression>& Assignment::value() {
+	return m_value;
+}
+
+std::string Assignment::to_string() {
+	return std::format("Assign('{}' = {})", m_variable, m_value->to_string());
+}
+
+NodeType Assignment::type() {
+	return NodeType::STATEMNET_ASSIGN;
+}

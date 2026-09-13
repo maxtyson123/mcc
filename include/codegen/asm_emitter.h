@@ -37,6 +37,8 @@ namespace mcc::codegen {
 			void emit_variable_declaration(InternalLanguage::nodes::VariableDeclaration& declaration);
 			void emit_declaration(InternalLanguage::nodes::Declaration& declaration);
 
+			void move_rax_into_var(std::string var);
+
 		public:
 
 			AsmEmitter();
