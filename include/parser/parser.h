@@ -20,7 +20,6 @@ namespace mcc::parser {
 
 		private:
 
-
 			core::ErrorReporter& m_errors;
 
 			std::unique_ptr<std::vector<lexer::Token>> m_tokens;

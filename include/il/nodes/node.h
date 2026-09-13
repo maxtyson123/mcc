@@ -24,6 +24,7 @@ namespace mcc::InternalLanguage::nodes {
 
 		STATEMENT,
 		STATEMENT_RETURN,
+	    STATEMNET_ASSIGN,
 		COMMENT,
 
 		IF_ELSE,
