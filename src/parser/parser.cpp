@@ -135,7 +135,7 @@ std::unique_ptr<Expression> Parser::parse_composite_expression_higher() {
 	}
 }
 
-std::unique_ptr<Expression> Parser::parse_composite_expression_lower() {
+std::unique_ptr<Expression> Parser::parse_composite_expression_mid() {
 
 	//NTS: works by try to grab already made '(x M/D y)' as left and right
 
@@ -171,6 +171,65 @@ std::unique_ptr<Expression> Parser::parse_composite_expression_lower() {
 		left = std::make_unique<BinaryOperation>(std::move(left), op, std::move(right));
 	}
 }
+
+
+std::unique_ptr<Expression> Parser::parse_composite_expression_lower() {
+
+	//NTS: works by try to grab already made '(x +/- y)' as left and right
+
+	std::unique_ptr<Expression> left = parse_composite_expression_mid();
+
+	// Keep building until run out of operators
+	while (true) {
+
+		BinaryOperator op;
+
+		switch (peek().type()) {
+			case TokenType::EQUALITY : {
+				op = BinaryOperator::EQUALITY;
+				break;
+			}
+
+			case TokenType::INEQUALITY : {
+				op = BinaryOperator::INEQUALITY;
+				break;
+			}
+
+			case TokenType::LESS_THAN : {
+				op = BinaryOperator::LESS_THAN;
+				break;
+			}
+
+			case TokenType::LESS_THAN_EQ : {
+				op = BinaryOperator::LESS_THAN_EQ;
+				break;
+			}
+
+			case TokenType::MORE_THAN : {
+				op = BinaryOperator::MORE_THAN;
+				break;
+			}
+
+			case TokenType::MORE_THAN_EQ : {
+				op = BinaryOperator::MORE_THAN_EQ;
+				break;
+			}
+
+			// No more operators to combine right hand expressions
+			default: {
+				return left;
+			}
+		}
+
+		// Consume the operator
+		advance();
+
+		// Left is now chained with the
+		std::unique_ptr<Expression> right = parse_composite_expression_mid();
+		left = std::make_unique<BinaryOperation>(std::move(left), op, std::move(right));
+	}
+}
+
 std::unique_ptr<Expression> Parser::parse_expression() {
 	return parse_composite_expression_lower();
 }
@@ -187,6 +246,30 @@ std::unique_ptr<StatementReturn> Parser::parse_return() {
 	expect(TokenType::SEMI_COLON, "Expected semi-colon to close return statement");
 
 	return std::make_unique<StatementReturn>(std::move(expression));
+}
+
+std::unique_ptr<Statement> Parser::parse_control_statement() {
+
+	// expect: <control> (<expresion>) <body>
+	Token control_type = advance();
+	expect(TokenType::OPEN_PARENTHESES, "Expected opening parentheses before boolean expression");
+	std::unique_ptr<Expression> condition = parse_expression();
+	expect(TokenType::CLOSE_PARENTHESES, "Expected closing parentheses after boolean expression");
+	std::unique_ptr<Statement> body = parse_statement();
+
+	// Loops dont have extra tokens
+	if (control_type.type() == TokenType::CONTROL_WHILE)
+		return std::make_unique<WhileLoop>(std::move(condition), std::move(body));
+
+	// @todo: for
+
+	std::unique_ptr<Statement> else_block = nullptr;
+	if (peek().type() == TokenType::CONTROL_ELSE) {
+		advance();
+		else_block = parse_statement();
+	}
+
+	return std::make_unique<IfElseStatement>(std::move(condition), std::move(body), std::move(else_block));
 }
 
 std::unique_ptr<Statement> Parser::parse_statement() {
@@ -209,6 +292,14 @@ std::unique_ptr<Statement> Parser::parse_statement() {
 				return nullptr;
 
 			return parse_variable_declaration(type_token, identifier_token);
+		}
+
+		case TokenType::OPEN_BRACKET : {
+			return parse_block();
+		}
+
+		case TokenType::CONTROL_IF : {
+			return parse_control_statement();
 		}
 
 		case TokenType::COMMENT_LINE : {
@@ -259,7 +350,7 @@ std::unique_ptr<VariableDeclaration> Parser::parse_variable_declaration(Token ty
 	std::unique_ptr<Expression> initialiser = nullptr;
 
 	// Has initialiser
-	if (check(TokenType::EQUALS)) {
+	if (check(TokenType::ASSIGN)) {
 		advance();
 		initialiser = parse_expression();
 	}
@@ -279,7 +370,7 @@ std::unique_ptr<Declaration> Parser::parse_declaration() {
 	Token type_token = expect(TokenType::KEYWORD_INT, "Expected declaration type");
 	Token identifier_token = expect(TokenType::IDENTIFIER, "Expected declaration identifier");
 
-	// Failed to get declartion setup (@todo should return after each to not break shit)
+	// Failed to get declaration setup (@todo should return after either to not break shit)
 	if (type_token.type() == TokenType::ERROR || identifier_token.type() == TokenType::ERROR )
 		return nullptr;
 
@@ -288,7 +379,7 @@ std::unique_ptr<Declaration> Parser::parse_declaration() {
 		case TokenType::OPEN_PARENTHESES:
 			return parse_function_declaration(type_token, identifier_token);
 
-		case TokenType::EQUALS:
+		case TokenType::ASSIGN:
 		case TokenType::SEMI_COLON:
 			return parse_variable_declaration(type_token, identifier_token);
 

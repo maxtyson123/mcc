@@ -11,7 +11,7 @@
 namespace mcc::InternalLanguage::nodes {
 
 
-	class Block : public Node {
+	class Block : public Statement {
 
 		private:
 			std::vector<std::unique_ptr<Statement>> m_statements;
@@ -29,6 +29,8 @@ namespace mcc::InternalLanguage::nodes {
 
 			[[nodiscard]] NodeType type() final;
 	};
+
+
 
 	class Declaration : public Statement {
 

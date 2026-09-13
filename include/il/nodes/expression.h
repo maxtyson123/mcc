@@ -59,8 +59,16 @@ namespace mcc::InternalLanguage::nodes {
 		SUBTRACT,
 		MULTIPLY,
 		DIVIDE,
+
+		EQUALITY,
+		INEQUALITY,
+		LESS_THAN,
+		LESS_THAN_EQ,
+		MORE_THAN,
+		MORE_THAN_EQ,
 	};
 
+	//@todo maybe can colapse comparison into this
 	class BinaryOperation : public Expression {
 
 		private:
@@ -83,7 +91,6 @@ namespace mcc::InternalLanguage::nodes {
 			[[nodiscard]] NodeType type() final;
 
 	};
-
 }
 
 #endif//MCC_INTERNAL_NODES_EXPRESSION_H

@@ -9,11 +9,12 @@
 #include <core/source_location.h>
 
 namespace mcc::lexer {
-
 	enum class TokenType {
-		IDENTIFIER,
 		END_OF_FILE,
 		ERROR,
+
+		IDENTIFIER,
+		ASSIGN,
 
 		OPEN_PARENTHESES,
 		CLOSE_PARENTHESES,
@@ -25,7 +26,17 @@ namespace mcc::lexer {
 		SUBTRACT,
 		MULTIPLY,
 		DIVIDE,
-		EQUALS,
+
+		EQUALITY,
+		INEQUALITY,
+		LESS_THAN,
+		LESS_THAN_EQ,
+		MORE_THAN,
+		MORE_THAN_EQ,
+
+		CONTROL_IF,
+		CONTROL_ELSE,
+		CONTROL_WHILE,
 
 		LITERAL_INTEGER,
 
@@ -34,6 +45,7 @@ namespace mcc::lexer {
 
 		COMMENT_LINE,
 	};
+
 
 	class Token : core::MCCObject {
 

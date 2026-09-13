@@ -106,6 +106,45 @@ Token Lexer::parse_digit_token(char c) {
 	return token_at_current(TokenType::LITERAL_INTEGER, lexeme);
 }
 
+Token Lexer::parse_comparison_token(char c) {
+
+	// Get whole lexeme
+	std::string lexeme = std::string(1, c);
+	char nextc = lookahead();
+
+	// Get the equality if it has one
+	bool equality = nextc == '=';
+	if (equality) {
+		lexeme.push_back(nextc);
+		consume();
+	}
+
+	// Base equality require second equals char
+	if (!equality)
+		if (c == '=' || c == '!') {
+			m_errors.report(Stage::LEXER, Severity::ERROR, m_location, "Malformed comparison token");
+			return token_at_current(TokenType::ERROR, lexeme);
+		}
+
+
+	switch (c) {
+
+		case '!' :
+			return token_at_current(TokenType::INEQUALITY, lexeme);
+
+		case '=' :
+			return token_at_current(TokenType::EQUALITY, lexeme);
+
+		case '<':
+			return token_at_current(equality ? TokenType::LESS_THAN : TokenType::LESS_THAN_EQ, lexeme);
+
+		case '>':
+			return token_at_current(equality ? TokenType::MORE_THAN : TokenType::MORE_THAN_EQ, lexeme);
+
+	}
+
+}
+
 Token Lexer::parse_comment_token(char c) {
 
 	// @todo multiline comment and inline
@@ -114,7 +153,6 @@ Token Lexer::parse_comment_token(char c) {
 	std::string lexeme = "/";
 	char type = consume();
 	lexeme.push_back(type);
-
 
 	// Get whole lexeme
 	while (lookahead() != '\n') {
@@ -155,7 +193,15 @@ Token Lexer::parse_punct_token(const char c) {
 			return token_at_current(TokenType::MULTIPLY, std::string(1, c));
 
 		case '=' :
-			return token_at_current(TokenType::EQUALS, std::string(1, c));
+			if (lookahead() == '=')
+				return parse_comparison_token(c);
+
+			return token_at_current(TokenType::ASSIGN, std::string(1, c));
+
+		case '<' :
+		case '>' :
+		case '!' :
+			return parse_comparison_token(c);
 
 		case '/' : {
 			if (lookahead() == '/')

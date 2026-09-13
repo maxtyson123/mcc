@@ -26,6 +26,9 @@ namespace mcc::InternalLanguage::nodes {
 		STATEMENT_RETURN,
 		COMMENT,
 
+		IF_ELSE,
+		LOOP_WHILE,
+
 		BLOCK,
 
 		DECLARATION,

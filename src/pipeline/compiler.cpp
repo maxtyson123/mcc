@@ -52,6 +52,7 @@ driver::DriverConfig CompilerPipeline::load_config() {
 void CompilerPipeline::validate() {
 
 	// Print any warnings or errors
+	printf("\n");
 	m_errors.print_all();
 
 	// Cant continue to next stage
@@ -65,6 +66,11 @@ void CompilerPipeline::compile() {
 	// Run Lexical analysis
 	std::vector<Token> tokens = m_lexer->tokenize_all();
 	validate();
+
+	// Print tokens
+	std::printf("Tokenized Program:\n");
+	for (auto& token : tokens)
+		std::printf("%s\n", token.to_string().c_str());
 
 	// Run syntactic analysis
 	m_parser->load_tokens(std::make_unique<std::vector<Token>>(tokens));

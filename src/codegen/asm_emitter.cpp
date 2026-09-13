@@ -4,6 +4,8 @@
 
 #include <codegen/asm_emitter.h>
 
+#include "il/nodes/control.h"
+
 #include <numbers>
 
 using namespace mcc;
@@ -32,6 +34,8 @@ void AsmEmitter::emit_expression(Expression& expression) {
 			auto& node = (BinaryOperation&)expression;
 
 			std::string op;
+			bool comparison = false;
+
 			switch (node.op()) {
 				case BinaryOperator::ADD : {
 					op = "add";
@@ -54,6 +58,43 @@ void AsmEmitter::emit_expression(Expression& expression) {
 					op = "div";
 					break;
 				}
+
+				case BinaryOperator::EQUALITY : {
+					op = "sete";
+					comparison = true;
+					break;
+				}
+
+				case BinaryOperator::INEQUALITY : {
+					op = "setne";
+					comparison = true;
+					break;
+				}
+
+				case BinaryOperator::LESS_THAN : {
+					op = "setl";
+					comparison = true;
+					break;
+				}
+
+
+				case BinaryOperator::LESS_THAN_EQ : {
+					op = "setle";
+					comparison = true;
+					break;
+				}
+
+				case BinaryOperator::MORE_THAN : {
+					op = "setm";
+					comparison = true;
+					break;
+				}
+
+				case BinaryOperator::MORE_THAN_EQ : {
+					op = "setme";
+					comparison = true;
+					break;
+				}
 			}
 
 			// Resolve lefthand onto stack
@@ -69,7 +110,14 @@ void AsmEmitter::emit_expression(Expression& expression) {
 			m_output << std::format("pop rax\n");
 
 			// Compute
-			m_output << std::format("{} rax, rbx\n", op);
+			if (!comparison) {
+				m_output << std::format("{} rax, rbx\n", op);
+				break;
+			}
+
+			m_output << std::format("cmp rax, rbx\n", op);
+			m_output << std::format("{} al\n", op);
+			m_output << "movzx rax, al\n";
 			break;
 		}
 
@@ -88,6 +136,52 @@ void AsmEmitter::emit_expression(Expression& expression) {
 
 		}
 	}
+}
+
+void AsmEmitter::emit_control_while(WhileLoop& statement) {
+
+	std::string start_label = m_labels.next();
+	std::string end_label = m_labels.next();
+
+	// Start
+	m_output << std::format("{}:\n", start_label);
+
+	// Jump out of loop if condition is false
+	emit_expression(*statement.condition());
+	m_output << std::format("cmp rax, 0\n");
+	m_output << std::format("je {}\n", end_label);
+
+	// Loop on the body
+	emit_statement(*statement.body());
+	m_output << std::format("jmp {}\n", start_label);
+
+	// Exit
+	m_output << std::format("{}:\n", end_label);
+}
+
+void AsmEmitter::emit_control_if_else(IfElseStatement& statement) {
+
+	std::string start_label = m_labels.next();
+	std::string else_label = m_labels.next();
+	std::string end_label = m_labels.next();
+
+	// Jump to else if condition is false
+	emit_expression(*statement.condition());
+	m_output << std::format("cmp rax, 0\n");
+	m_output << std::format("je {}\n", else_label);
+
+	// True body, skipping false
+	emit_statement(*statement.body());
+	m_output << std::format("jmp {}\n", end_label);
+
+	// False body
+	m_output << std::format("{}:\n", else_label);
+	if (statement.has_else())
+		emit_statement(*statement.else_body());
+	m_output << std::format("jmp {}\n", end_label);
+
+	// Exit
+	m_output << std::format("{}:\n", end_label);
 }
 
 void AsmEmitter::emit_statement(Statement& statement) {
@@ -109,8 +203,22 @@ void AsmEmitter::emit_statement(Statement& statement) {
 			emit_variable_declaration((VariableDeclaration&)statement);
 			return;
 		}
-	}
 
+		case NodeType::BLOCK : {
+			emit_block((Block&)statement);
+			return;
+		}
+
+		case NodeType::LOOP_WHILE :  {
+			emit_control_while((WhileLoop&)statement);
+			return;
+		}
+
+		case NodeType::IF_ELSE : {
+			emit_control_if_else((IfElseStatement&)statement);
+			return;
+		}
+	}
 }
 
 void AsmEmitter::emit_block(Block& block) {

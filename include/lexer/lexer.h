@@ -39,6 +39,7 @@ namespace mcc::lexer {
 
 		    Token parse_text_token(char c);
 		    Token parse_digit_token(char c);
+		    Token parse_comparison_token(char c);
 		    Token parse_punct_token(char c);
 		    Token parse_comment_token(char c);
 		    Token parse_next();

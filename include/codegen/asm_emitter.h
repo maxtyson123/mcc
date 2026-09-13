@@ -11,6 +11,7 @@
 #include <il/nodes/expression.h>
 #include <il/nodes/statement.h>
 #include <il/nodes/structure.h>
+#include <il/nodes/control.h>
 #include <sstream>
 
 namespace mcc::codegen {
@@ -28,7 +29,9 @@ namespace mcc::codegen {
 			SymbolTable m_symbols;
 
 			void emit_expression(InternalLanguage::nodes::Expression& expression);
-			void emit_statement(InternalLanguage::nodes::Statement& statement);
+		    void emit_control_while(InternalLanguage::nodes::WhileLoop& statement);
+		    void emit_control_if_else(InternalLanguage::nodes::IfElseStatement& statement);
+		    void emit_statement(InternalLanguage::nodes::Statement& statement);
 			void emit_block(InternalLanguage::nodes::Block& block);
 			void emit_function(InternalLanguage::nodes::FunctionDeclaration& function, bool is_setup_function = false);
 			void emit_variable_declaration(InternalLanguage::nodes::VariableDeclaration& declaration);

@@ -8,6 +8,7 @@
 
 #include <il/nodes/expression.h>
 #include <il/nodes/statement.h>
+#include <il/nodes/control.h>
 #include <il/nodes/structure.h>
 #include <core/error_reporter.h>
 #include <lexer/lexer.h>
@@ -41,11 +42,13 @@ namespace mcc::parser {
 			std::unique_ptr<InternalLanguage::nodes::VariableReference> parse_variable_reference();
 			std::unique_ptr<InternalLanguage::nodes::Expression> parse_value_expression();
 			std::unique_ptr<InternalLanguage::nodes::Expression> parse_composite_expression_higher();
+			std::unique_ptr<InternalLanguage::nodes::Expression> parse_composite_expression_mid();
 			std::unique_ptr<InternalLanguage::nodes::Expression> parse_composite_expression_lower();
 			std::unique_ptr<InternalLanguage::nodes::Expression> parse_expression();
 
 			std::unique_ptr<InternalLanguage::nodes::StatementReturn> parse_return();
-			std::unique_ptr<InternalLanguage::nodes::Statement> parse_statement();
+		    std::unique_ptr<InternalLanguage::nodes::Statement> parse_control_statement();
+		    std::unique_ptr<InternalLanguage::nodes::Statement> parse_statement();
 
 			std::unique_ptr<InternalLanguage::nodes::Block> parse_block();
 

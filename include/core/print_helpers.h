@@ -15,9 +15,11 @@ namespace std {
 		auto format(mcc::lexer::TokenType type, std::format_context& ctx) const {
 			std::string_view name = "Unknown";
 			switch (type) {
-				case mcc::lexer::TokenType::IDENTIFIER:  name = "Identifer"; break;
 				case mcc::lexer::TokenType::END_OF_FILE: name = "End Of File"; break;
 				case mcc::lexer::TokenType::ERROR: name = "Error"; break;
+
+				case mcc::lexer::TokenType::IDENTIFIER:  name = "Identifer"; break;
+				case mcc::lexer::TokenType::ASSIGN:  name = "Assign"; break;
 
 				case mcc::lexer::TokenType::OPEN_PARENTHESES:  name = "Open Parentheses"; break;
 				case mcc::lexer::TokenType::CLOSE_PARENTHESES: name = "Close Parentheses"; break;
@@ -29,7 +31,17 @@ namespace std {
 				case mcc::lexer::TokenType::SUBTRACT: name = "Subtract"; break;
 				case mcc::lexer::TokenType::MULTIPLY: name = "Multiply"; break;
 				case mcc::lexer::TokenType::DIVIDE: name = "Divide"; break;
-				case mcc::lexer::TokenType::EQUALS: name = "Equals"; break;
+
+				case mcc::lexer::TokenType::CONTROL_IF: name = "If"; break;
+				case mcc::lexer::TokenType::CONTROL_ELSE: name = "Else"; break;
+				case mcc::lexer::TokenType::CONTROL_WHILE: name = "While"; break;
+
+				case mcc::lexer::TokenType::EQUALITY: name = "Equality"; break;
+				case mcc::lexer::TokenType::INEQUALITY: name = "Inequality"; break;
+				case mcc::lexer::TokenType::LESS_THAN: name = "Less Than"; break;
+				case mcc::lexer::TokenType::LESS_THAN_EQ: name = "Less Than Or Equals"; break;
+				case mcc::lexer::TokenType::MORE_THAN: name = "More Than"; break;
+				case mcc::lexer::TokenType::MORE_THAN_EQ: name = "More Than Or Equals"; break;
 
 				case mcc::lexer::TokenType::LITERAL_INTEGER:  name = "Integer Literal"; break;
 
@@ -72,11 +84,17 @@ namespace std {
 				case mcc::InternalLanguage::nodes::BinaryOperator::SUBTRACT:  name = "Subtract"; break;
 				case mcc::InternalLanguage::nodes::BinaryOperator::MULTIPLY:  name = "Multiply"; break;
 				case mcc::InternalLanguage::nodes::BinaryOperator::DIVIDE:  name = "Divide"; break;
+
+				case mcc::InternalLanguage::nodes::BinaryOperator::EQUALITY: name = "Equality"; break;
+				case mcc::InternalLanguage::nodes::BinaryOperator::INEQUALITY: name = "Inequality"; break;
+				case mcc::InternalLanguage::nodes::BinaryOperator::LESS_THAN: name = "Less Than"; break;
+				case mcc::InternalLanguage::nodes::BinaryOperator::LESS_THAN_EQ: name = "Less Than Or Equals"; break;
+				case mcc::InternalLanguage::nodes::BinaryOperator::MORE_THAN: name = "More Than"; break;
+				case mcc::InternalLanguage::nodes::BinaryOperator::MORE_THAN_EQ: name = "More Than Or Equals"; break;
 			}
 			return std::formatter<std::string_view>::format(name, ctx);
 		}
 	};
-
 }
 
 #endif//MCC_PRINT_HELPERS_H
