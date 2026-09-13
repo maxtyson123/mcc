@@ -43,9 +43,11 @@ jobs:
           ld test/program.o test/_start.o -o test/program
 
           # Execute the compiled binary and check its exit code
+          set +e
           ./test/program
           EXIT_CODE=$?
           echo "Program exited with code: $EXIT_CODE"
+          set -e
 
           if [ "$EXIT_CODE" -eq 42 ]; then
             echo "Integration test passed successfully!"
